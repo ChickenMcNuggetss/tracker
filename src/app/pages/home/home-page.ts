@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
+import { Button } from '../../shared/components/button/button.component';
 
 interface CalendarDay {
   date: Date;
@@ -13,9 +14,9 @@ interface CalendarDay {
 
 @Component({
   selector: 'app-home-page',
-  imports: [CommonModule],
+  imports: [CommonModule, Button],
   templateUrl: './home-page.html',
-  styleUrl: './home-page.scss'
+  styleUrl: './home-page.scss',
 })
 export class HomePage {
   readonly weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -27,13 +28,13 @@ export class HomePage {
 
   private readonly monthFormatter = new Intl.DateTimeFormat('en-US', {
     month: 'long',
-    year: 'numeric'
+    year: 'numeric',
   });
 
   private readonly dateFormatter = new Intl.DateTimeFormat('en-US', {
     weekday: 'long',
     month: 'long',
-    day: 'numeric'
+    day: 'numeric',
   });
 
   constructor() {
@@ -66,7 +67,7 @@ export class HomePage {
     const gridStartDate = new Date(
       firstDayOfMonth.getFullYear(),
       firstDayOfMonth.getMonth(),
-      firstDayOfMonth.getDate() - startOffset
+      firstDayOfMonth.getDate() - startOffset,
     );
     const todayKey = this.toDateKey(new Date());
 
@@ -74,7 +75,7 @@ export class HomePage {
       const date = new Date(
         gridStartDate.getFullYear(),
         gridStartDate.getMonth(),
-        gridStartDate.getDate() + index
+        gridStartDate.getDate() + index,
       );
       const dateKey = this.toDateKey(date);
 
@@ -85,7 +86,7 @@ export class HomePage {
         isCurrentMonth: date.getMonth() === this.displayedMonth.getMonth(),
         isToday: dateKey === todayKey,
         isSelected: dateKey === this.selectedDateKey,
-        isPeriodDay: this.isPeriodDay(dateKey)
+        isPeriodDay: this.isPeriodDay(dateKey),
       };
     });
   }
@@ -94,7 +95,7 @@ export class HomePage {
     this.displayedMonth = new Date(
       this.displayedMonth.getFullYear(),
       this.displayedMonth.getMonth() + offset,
-      1
+      1,
     );
     this.buildCalendarDays();
   }

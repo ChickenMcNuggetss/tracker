@@ -2,11 +2,7 @@
   display: block;
   min-height: 100vh;
   color: #34273d;
-  font-family:
-    'Avenir Next',
-    'Nunito',
-    'Segoe UI',
-    sans-serif;
+  font-family: 'Avenir Next', 'Nunito', 'Segoe UI', sans-serif;
 }
 
 .page-shell {
@@ -109,8 +105,7 @@
 }
 
 .nav-button,
-.day-cell,
-.toggle-button {
+.day-cell {
   transition:
     transform 160ms ease,
     box-shadow 160ms ease,
@@ -135,8 +130,7 @@
 }
 
 .nav-button:hover,
-.day-cell:hover,
-.toggle-button:hover:not(:disabled) {
+.day-cell:hover {
   transform: translateY(-1px);
 }
 
@@ -240,25 +234,6 @@
   font-weight: 600;
 }
 
-.toggle-button {
-  border: 0;
-  border-radius: 999px;
-  background: linear-gradient(135deg, #e07b9b 0%, #c45e86 100%);
-  color: #fff;
-  cursor: pointer;
-  font-size: 0.96rem;
-  font-weight: 700;
-  padding: 0.95rem 1.4rem;
-  white-space: nowrap;
-  box-shadow: 0 12px 30px rgba(196, 94, 134, 0.25);
-}
-
-.toggle-button:disabled {
-  opacity: 0.52;
-  cursor: not-allowed;
-  box-shadow: none;
-}
-
 @media (max-width: 720px) {
   .calendar-layout {
     padding: 2rem 1rem;
@@ -277,10 +252,6 @@
   .selection-panel {
     flex-direction: column;
     align-items: stretch;
-  }
-
-  .toggle-button {
-    width: 100%;
   }
 }
 
