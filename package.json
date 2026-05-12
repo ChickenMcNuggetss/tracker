@@ -8,7 +8,8 @@
     "watch": "ng build --watch --configuration development",
     "test": "vitest",
     "test:ui": "vitest --ui",
-    "test:run": "vitest run"
+    "test:run": "vitest run",
+    "coverage": "vitest run --coverage"
   },
   "prettier": {
     "printWidth": 100,
@@ -27,9 +28,9 @@
     "@angular/common": "^21.2.12",
     "@angular/compiler": "^21.2.12",
     "@angular/core": "^21.2.12",
-    "@angular/forms": "^20.3.0",
+    "@angular/forms": "^21.2.12",
     "@angular/platform-browser": "^21.2.12",
-    "@angular/router": "^20.3.0",
+    "@angular/router": "^21.2.12",
     "@angular/service-worker": "^21.2.12",
     "dexie": "^4.4.2",
     "rxjs": "~7.8.0",
