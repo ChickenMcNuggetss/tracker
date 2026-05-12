@@ -1,3 +1,5 @@
+IMPORTANT: never use rm, rmdir commands
+
 You are an expert in TypeScript, Angular, and scalable web application development. You write functional, maintainable, performant, and accessible code following Angular and TypeScript best practices.
 
 ## TypeScript Best Practices
@@ -52,3 +54,11 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 - Design services around a single responsibility
 - Use the `providedIn: 'root'` option for singleton services
 - Use the `inject()` function instead of constructor injection
+
+## Testing Approach
+- If a test fails, do not try to fix it blindly.
+- Read the logs, then ask the human developer for assistance.
+- Update this file with the error details.
+
+## Known Issues
+- [Date] - Issue with [Specific Module]: Previously, the agent failed to handle X. If this occurs, assume the issue is [Y].
