@@ -9,7 +9,7 @@ describe('App', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [App],
-      providers: [provideRouter(routes)]
+      providers: [provideRouter(routes)],
     }).compileComponents();
   });
 
@@ -38,7 +38,7 @@ describe('App', () => {
 describe('HomePage', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HomePage]
+      imports: [HomePage],
     }).compileComponents();
   });
 
@@ -71,7 +71,7 @@ describe('HomePage', () => {
     fixture.detectChanges();
 
     expect(component.selectedDateKey).toBe(targetDay.dateKey);
-    expect(dayButtons[10].classList.contains('selected')).toBeTrue();
+    expect(dayButtons[10].classList.contains('selected')).toBeTruthy();
   });
 
   it('should toggle a selected day on as a period day', () => {
@@ -85,12 +85,12 @@ describe('HomePage', () => {
     dayButtons[12].click();
     fixture.detectChanges();
 
-    const toggleButton = fixture.nativeElement.querySelector('.toggle-button') as HTMLButtonElement;
+    const toggleButton = fixture.nativeElement.querySelector('app-button') as HTMLButtonElement;
     toggleButton.click();
     fixture.detectChanges();
 
     expect(component.periodDates).toContain(targetDay.dateKey);
-    expect(dayButtons[12].classList.contains('period-day')).toBeTrue();
+    expect(dayButtons[12].classList.contains('period-day')).toBeTruthy();
   });
 
   it('should toggle a selected day off as a period day', () => {
@@ -104,14 +104,14 @@ describe('HomePage', () => {
     dayButtons[14].click();
     fixture.detectChanges();
 
-    const toggleButton = fixture.nativeElement.querySelector('.toggle-button') as HTMLButtonElement;
+    const toggleButton = fixture.nativeElement.querySelector('app-button') as HTMLButtonElement;
     toggleButton.click();
     fixture.detectChanges();
     toggleButton.click();
     fixture.detectChanges();
 
     expect(component.periodDates).not.toContain(targetDay.dateKey);
-    expect(dayButtons[14].classList.contains('period-day')).toBeFalse();
+    expect(dayButtons[14].classList.contains('period-day')).toBeFalsy();
   });
 
   it('should change the visible month', () => {
@@ -120,7 +120,9 @@ describe('HomePage', () => {
 
     const component = fixture.componentInstance;
     const initialMonth = component.displayedMonth.getMonth();
-    const nextButton = fixture.nativeElement.querySelectorAll('.nav-button')[1] as HTMLButtonElement;
+    const nextButton = fixture.nativeElement.querySelectorAll(
+      '.nav-button',
+    )[1] as HTMLButtonElement;
 
     nextButton.click();
     fixture.detectChanges();
