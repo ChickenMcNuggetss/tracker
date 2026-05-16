@@ -1,3 +1,10 @@
-<button type="button" class="btn" [ngClass]="'btn--' + variant" [disabled]="disabled">
+<button
+  type="button"
+  class="btn"
+  [class.btn--primary]="variant() === 'primary'"
+  [class.btn--secondary]="variant() === 'secondary'"
+  [disabled]="disabled()"
+  [attr.aria-disabled]="disabled()"
+>
   <ng-content></ng-content>
 </button>
