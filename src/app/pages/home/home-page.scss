@@ -1,8 +1,10 @@
+@use '../../../theme/mixins';
+
 :host {
   display: block;
   min-height: 100vh;
-  color: #34273d;
-  font-family: 'Avenir Next', 'Nunito', 'Segoe UI', sans-serif;
+  color: var(--color-text-primary);
+  font-family: var(--font-family-base);
 }
 
 .page-shell {
@@ -10,9 +12,14 @@
   min-height: 100vh;
   overflow: hidden;
   background:
-    radial-gradient(circle at top left, rgba(255, 202, 224, 0.8), transparent 32%),
-    radial-gradient(circle at right center, rgba(255, 230, 235, 0.95), transparent 28%),
-    linear-gradient(180deg, #fffafb 0%, #fff5f7 48%, #fffdfd 100%);
+    radial-gradient(circle at top left, var(--color-page-radial-left), transparent 32%),
+    radial-gradient(circle at right center, var(--color-page-radial-right), transparent 28%),
+    linear-gradient(
+      180deg,
+      var(--color-page-bg-start) 0%,
+      var(--color-page-bg-middle) 48%,
+      var(--color-page-bg-end) 100%
+    );
 }
 
 .page-glow {
@@ -28,13 +35,13 @@
 .page-glow-left {
   top: -7rem;
   left: -7rem;
-  background: rgba(255, 188, 216, 0.55);
+  background: var(--color-page-glow-left);
 }
 
 .page-glow-right {
   right: -8rem;
   bottom: -8rem;
-  background: rgba(255, 213, 221, 0.8);
+  background: var(--color-page-glow-right);
 }
 
 .calendar-layout {
@@ -55,16 +62,16 @@
 .month-caption,
 .selection-label {
   margin: 0;
-  color: #c16f87;
-  font-size: 0.82rem;
-  font-weight: 700;
+  color: var(--color-accent);
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-bold);
   letter-spacing: 0.16em;
   text-transform: uppercase;
 }
 
 .hero-copy h1 {
   margin: 0.8rem 0 0;
-  font-size: clamp(2.1rem, 4vw, 3.6rem);
+  font-size: var(--font-size-title-lg);
   line-height: 1.05;
   letter-spacing: -0.05em;
 }
@@ -72,17 +79,17 @@
 .subtitle {
   margin: 1rem 0 0;
   max-width: 32rem;
-  color: #7a6475;
-  font-size: 1rem;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-body);
   line-height: 1.65;
 }
 
 .calendar-card {
   padding: 1.5rem;
-  border: 1px solid rgba(220, 171, 189, 0.38);
-  border-radius: 2rem;
-  background: rgba(255, 255, 255, 0.78);
-  box-shadow: 0 22px 70px rgba(184, 120, 147, 0.14);
+  border: 1px solid var(--color-border-card);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface-card);
+  box-shadow: var(--shadow-card);
   backdrop-filter: blur(16px);
 }
 
@@ -100,18 +107,13 @@
 
 .month-heading h2 {
   margin: 0.3rem 0 0;
-  font-size: clamp(1.5rem, 2vw, 2rem);
-  font-weight: 700;
+  font-size: var(--font-size-title-sm);
+  font-weight: var(--font-weight-bold);
 }
 
 .nav-button,
 .day-cell {
-  transition:
-    transform 160ms ease,
-    box-shadow 160ms ease,
-    background-color 160ms ease,
-    border-color 160ms ease,
-    color 160ms ease;
+  transition: var(--transition-interactive);
 }
 
 .nav-button {
@@ -121,12 +123,14 @@
   width: 3rem;
   height: 3rem;
   border: 0;
-  border-radius: 999px;
-  background: #fff1f5;
-  color: #a1526d;
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-control);
+  color: var(--color-accent-strong);
   cursor: pointer;
-  box-shadow: inset 0 0 0 1px rgba(206, 144, 166, 0.24);
-  font-size: 1.5rem;
+  box-shadow: inset 0 0 0 1px var(--color-border-control);
+  font-size: var(--font-size-icon);
+
+  @include mixins.focus-ring;
 }
 
 .nav-button:hover,
@@ -142,9 +146,9 @@
 }
 
 .weekday-row span {
-  color: #9d8290;
-  font-size: 0.83rem;
-  font-weight: 700;
+  color: var(--color-text-soft);
+  font-size: var(--font-size-weekday);
+  font-weight: var(--font-weight-bold);
   text-align: center;
   letter-spacing: 0.03em;
 }
@@ -159,29 +163,31 @@
   position: relative;
   min-height: 5.5rem;
   padding: 0.7rem 0.55rem;
-  border: 1px solid rgba(220, 200, 209, 0.72);
-  border-radius: 1.4rem;
-  background: #fffdfd;
-  color: #473540;
+  border: 1px solid var(--color-border-cell);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-cell);
+  color: var(--color-text-secondary);
   cursor: pointer;
   text-align: left;
+
+  @include mixins.focus-ring;
 }
 
 .day-number {
   display: inline-block;
-  font-size: 1.02rem;
-  font-weight: 700;
+  font-size: var(--font-size-day);
+  font-weight: var(--font-weight-bold);
 }
 
 .today-label {
   display: inline-flex;
   margin-top: 0.55rem;
   padding: 0.22rem 0.5rem;
-  border-radius: 999px;
-  background: #fff1f6;
-  color: #b85b79;
-  font-size: 0.72rem;
-  font-weight: 700;
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-tag);
+  color: var(--color-accent-emphasis);
+  font-size: var(--font-size-weekday-compact);
+  font-weight: var(--font-weight-bold);
 }
 
 .period-indicator {
@@ -195,27 +201,31 @@
 }
 
 .outside-month {
-  background: rgba(255, 250, 252, 0.7);
-  color: #b9a5b0;
+  background: var(--color-surface-muted);
+  color: var(--color-text-faint);
 }
 
 .today {
-  border-color: rgba(233, 149, 178, 0.85);
+  border-color: var(--color-border-today);
 }
 
 .selected {
-  border-color: #d46c8e;
-  box-shadow: 0 0 0 3px rgba(230, 157, 186, 0.24);
+  border-color: var(--color-accent-selected);
+  box-shadow: 0 0 0 3px var(--color-ring-selected);
 }
 
 .period-day {
-  border-color: #dd7394;
-  background: linear-gradient(180deg, #ffe0ea 0%, #ffd1df 100%);
-  color: #8b294b;
+  border-color: var(--color-accent-period);
+  background: linear-gradient(
+    180deg,
+    var(--color-surface-period-start) 0%,
+    var(--color-surface-period-end) 100%
+  );
+  color: var(--color-period-text);
 }
 
 .period-day .today-label {
-  background: rgba(255, 255, 255, 0.7);
+  background: var(--color-surface-period-tag);
 }
 
 .selection-panel {
@@ -225,28 +235,28 @@
   gap: 1rem;
   margin-top: 1.4rem;
   padding-top: 1.35rem;
-  border-top: 1px solid rgba(227, 204, 214, 0.75);
+  border-top: 1px solid var(--color-border-divider);
 }
 
 .selection-value {
   margin: 0.35rem 0 0;
-  font-size: 1.05rem;
-  font-weight: 600;
+  font-size: var(--font-size-body-strong);
+  font-weight: var(--font-weight-semibold);
 }
 
-@media (max-width: 720px) {
+@include mixins.below-md {
   .calendar-layout {
     padding: 2rem 1rem;
   }
 
   .calendar-card {
     padding: 1rem;
-    border-radius: 1.5rem;
+    border-radius: var(--radius-lg);
   }
 
   .day-cell {
     min-height: 4.6rem;
-    border-radius: 1.1rem;
+    border-radius: var(--radius-sm);
   }
 
   .selection-panel {
@@ -255,7 +265,7 @@
   }
 }
 
-@media (max-width: 560px) {
+@include mixins.below-sm {
   .calendar-toolbar {
     gap: 0.75rem;
   }
@@ -271,7 +281,7 @@
   }
 
   .weekday-row span {
-    font-size: 0.72rem;
+    font-size: var(--font-size-weekday-compact);
   }
 
   .day-cell {

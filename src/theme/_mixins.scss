@@ -1,0 +1,21 @@
+$breakpoint-md: 720px;
+$breakpoint-sm: 560px;
+
+@mixin below-md {
+  @media (max-width: $breakpoint-md) {
+    @content;
+  }
+}
+
+@mixin below-sm {
+  @media (max-width: $breakpoint-sm) {
+    @content;
+  }
+}
+
+@mixin focus-ring {
+  &:focus-visible {
+    outline: 2px solid transparent;
+    box-shadow: var(--shadow-focus-ring);
+  }
+}

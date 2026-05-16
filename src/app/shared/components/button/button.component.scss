@@ -1,18 +1,17 @@
+@use '../../../../theme/mixins';
+
 .btn {
-  transition:
-    transform 160ms ease,
-    box-shadow 160ms ease,
-    background-color 160ms ease,
-    border-color 160ms ease,
-    color 160ms ease;
+  transition: var(--transition-interactive);
   border: 0;
-  border-radius: 999px;
-  color: #fff;
+  border-radius: var(--radius-pill);
+  color: var(--color-button-text);
   cursor: pointer;
-  font-size: 0.96rem;
-  font-weight: 700;
+  font-size: var(--font-size-button);
+  font-weight: var(--font-weight-bold);
   padding: 0.95rem 1.4rem;
   white-space: nowrap;
+
+  @include mixins.focus-ring;
 
   &:hover:not(:disabled) {
     transform: translateY(-1px);
@@ -26,16 +25,24 @@
 }
 
 .btn--primary {
-  background: linear-gradient(135deg, #e07b9b 0%, #c45e86 100%);
-  box-shadow: 0 12px 30px rgba(196, 94, 134, 0.25);
+  background: linear-gradient(
+    135deg,
+    var(--color-button-primary-start) 0%,
+    var(--color-button-primary-end) 100%
+  );
+  box-shadow: var(--shadow-button-primary);
 }
 
 .btn--secondary {
-  background: linear-gradient(135deg, #c45e86 0%, #a85070 100%);
-  box-shadow: 0 12px 30px rgba(160, 70, 100, 0.25);
+  background: linear-gradient(
+    135deg,
+    var(--color-button-secondary-start) 0%,
+    var(--color-button-secondary-end) 100%
+  );
+  box-shadow: var(--shadow-button-secondary);
 }
 
-@media (max-width: 720px) {
+@include mixins.below-md {
   .btn {
     width: 100%;
   }

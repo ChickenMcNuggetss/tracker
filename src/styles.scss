@@ -1,3 +1,7 @@
+@use './theme/variables';
+@use './theme/typography';
+@use './theme/dark-mode';
+
 html,
 body {
   min-height: 100%;
@@ -5,6 +9,8 @@ body {
 
 body {
   margin: 0;
+  background: var(--color-page-bg-end);
+  color: var(--color-text-primary);
 }
 
 *,

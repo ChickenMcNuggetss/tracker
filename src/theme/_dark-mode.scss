@@ -1,0 +1,50 @@
+body.theme-dark {
+  color-scheme: dark;
+
+  --color-text-primary: #f7e9f0;
+  --color-text-secondary: #f1dbe4;
+  --color-text-muted: #d3b8c3;
+  --color-text-soft: #baa1ad;
+  --color-text-faint: #957d89;
+  --color-accent: #f4a8c2;
+  --color-accent-strong: #ffbfd5;
+  --color-accent-emphasis: #ffabc6;
+  --color-accent-selected: #ff8cb2;
+  --color-accent-period: #ff98b8;
+  --color-period-text: #2c0f1d;
+
+  --color-page-bg-start: #1c1119;
+  --color-page-bg-middle: #120b12;
+  --color-page-bg-end: #100a10;
+  --color-page-glow-left: rgba(171, 75, 116, 0.28);
+  --color-page-glow-right: rgba(198, 91, 138, 0.24);
+  --color-page-radial-left: rgba(171, 75, 116, 0.22);
+  --color-page-radial-right: rgba(198, 91, 138, 0.2);
+
+  --color-surface-card: rgba(37, 23, 33, 0.82);
+  --color-surface-cell: #21151d;
+  --color-surface-muted: rgba(48, 31, 42, 0.72);
+  --color-surface-control: #3a2431;
+  --color-surface-tag: #462a3a;
+  --color-surface-period-start: #ffb3cb;
+  --color-surface-period-end: #ff8fb4;
+  --color-surface-period-tag: rgba(255, 255, 255, 0.18);
+
+  --color-border-card: rgba(255, 194, 220, 0.18);
+  --color-border-cell: rgba(255, 205, 224, 0.22);
+  --color-border-control: rgba(255, 194, 220, 0.22);
+  --color-border-divider: rgba(255, 205, 224, 0.18);
+  --color-border-today: rgba(255, 168, 201, 0.88);
+  --color-ring-selected: rgba(255, 168, 201, 0.3);
+
+  --color-button-primary-start: #ff9fc0;
+  --color-button-primary-end: #db6e98;
+  --color-button-secondary-start: #e786a8;
+  --color-button-secondary-end: #b85781;
+  --color-button-text: #250f1a;
+
+  --shadow-card: 0 22px 70px rgba(0, 0, 0, 0.38);
+  --shadow-button-primary: 0 12px 30px rgba(255, 132, 176, 0.28);
+  --shadow-button-secondary: 0 12px 30px rgba(184, 87, 129, 0.3);
+  --shadow-focus-ring: 0 0 0 3px rgba(255, 168, 201, 0.36);
+}
