@@ -18,7 +18,7 @@
           class="nav-button"
           (click)="changeMonth(-1)"
           aria-label="Previous month"
-          >
+        >
           <span aria-hidden="true">‹</span>
         </button>
 
@@ -38,29 +38,33 @@
         }
       </div>
 
-      <div class="calendar-grid" role="grid" aria-label="Monthly calendar">
-        @for (day of calendarDays; track trackByDateKey($index, day)) {
-          <button
-            type="button"
-            class="day-cell"
-            [class.outside-month]="!day.isCurrentMonth"
-            [class.selected]="day.isSelected"
-            [class.period-day]="day.isPeriodDay"
-            [class.today]="day.isToday"
-            [attr.aria-pressed]="day.isSelected"
-            [attr.aria-label]="day.date | date: 'fullDate'"
-            (click)="selectDate(day)"
+      @if (!!calendarDays().length) {
+        <div class="calendar-grid" role="grid" aria-label="Monthly calendar">
+          @for (day of calendarDays(); track trackByDateKey($index, day)) {
+            <button
+              type="button"
+              class="day-cell"
+              [class.outside-month]="!day.isCurrentMonth"
+              [class.selected]="day.isSelected"
+              [class.period-day]="day.isPeriodDay"
+              [class.today]="day.isToday"
+              [attr.aria-pressed]="day.isSelected"
+              [attr.aria-label]="day.date | date: 'fullDate'"
+              (click)="selectDate(day)"
             >
-            <span class="day-number">{{ day.dayNumber }}</span>
-            @if (day.isToday) {
-              <span class="today-label">Today</span>
-            }
-            @if (day.isPeriodDay) {
-              <span class="period-indicator" aria-hidden="true"></span>
-            }
-          </button>
-        }
-      </div>
+              <span class="day-number">{{ day.dayNumber }}</span>
+              @if (day.isToday) {
+                <span class="today-label">Today</span>
+              }
+              @if (day.isPeriodDay) {
+                <span class="period-indicator" aria-hidden="true"></span>
+              }
+            </button>
+          }
+        </div>
+      } @else {
+        <p class="empty-state">Loading calendar...</p>
+      }
 
       <div class="selection-panel">
         <div class="selection-copy">
