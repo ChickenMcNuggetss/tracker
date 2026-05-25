@@ -9,7 +9,6 @@ export interface PeriodDayRecord {
   month: number;
   createdAt: string;
   updatedAt: string;
-  source: 'manual';
 }
 
 export interface CycleSettingsRecord {
