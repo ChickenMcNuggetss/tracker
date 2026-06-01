@@ -1,0 +1,81 @@
+<!-- <section class="page-shell">
+  <div class="page-glow page-glow-left" aria-hidden="true"></div>
+  <div class="page-glow page-glow-right" aria-hidden="true"></div> -->
+
+<main class="calendar-layout">
+  <header class="hero-copy">
+    <p class="eyebrow">Cycle Calendar</p>
+    <h1>Track your flow with a calm, simple monthly view.</h1>
+    <p class="subtitle">
+      Select a day, then toggle it on or off as a period day. Everything stays local to this page.
+    </p>
+  </header>
+
+  <section class="calendar-card" aria-label="Menstrual cycle calendar">
+    <div class="calendar-toolbar">
+      <button
+        type="button"
+        class="nav-button"
+        (click)="changeMonth(-1)"
+        aria-label="Previous month"
+      >
+        <span aria-hidden="true">‹</span>
+      </button>
+
+      <div class="month-heading">
+        <p class="month-caption">Current view</p>
+        <h2>{{ monthLabel }}</h2>
+      </div>
+
+      <button type="button" class="nav-button" (click)="changeMonth(1)" aria-label="Next month">
+        <span aria-hidden="true">›</span>
+      </button>
+    </div>
+
+    <div class="weekday-row" aria-hidden="true">
+      @for (weekDay of weekDays; track weekDay) {
+        <span>{{ weekDay }}</span>
+      }
+    </div>
+
+    @if (!!calendarDays().length) {
+      <div class="calendar-grid" role="grid" aria-label="Monthly calendar">
+        @for (day of calendarDays(); track trackByDateKey($index, day)) {
+          <button
+            type="button"
+            class="day-cell"
+            [class.outside-month]="!day.isCurrentMonth"
+            [class.selected]="day.isSelected"
+            [class.period-day]="day.isPeriodDay"
+            [class.today]="day.isToday"
+            [attr.aria-pressed]="day.isSelected"
+            [attr.aria-label]="day.date | date: 'fullDate'"
+            (click)="selectDate(day)"
+          >
+            <span class="day-number">{{ day.dayNumber }}</span>
+            @if (day.isToday) {
+              <span class="today-label">Today</span>
+            }
+            @if (day.isPeriodDay) {
+              <span class="period-indicator" aria-hidden="true"></span>
+            }
+          </button>
+        }
+      </div>
+    } @else {
+      <p class="empty-state">Loading calendar...</p>
+    }
+
+    <div class="selection-panel">
+      <div class="selection-copy">
+        <p class="selection-label">Selected date</p>
+        <p class="selection-value">{{ selectedDateLabel }}</p>
+      </div>
+
+      <app-button [disabled]="!selectedDateKey" (click)="toggleSelectedPeriodDay()">
+        {{ toggleLabel }}
+      </app-button>
+    </div>
+  </section>
+</main>
+<!-- </section> -->
