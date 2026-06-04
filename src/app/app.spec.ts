@@ -6,6 +6,7 @@ import { routes } from './app.routes';
 import { CalendarPage } from './pages/calendar-page/calendar-page';
 import { HomePage } from './pages/home/home-page';
 import { LogsPage } from './pages/logs-page/logs-page';
+import { ProfilePage } from './pages/profile-page/profile-page';
 
 describe('App', () => {
   beforeEach(async () => {
@@ -32,6 +33,7 @@ describe('App', () => {
     expect(compiled.textContent).toContain('Dashboard');
     expect(compiled.textContent).toContain('Calendar');
     expect(compiled.textContent).toContain('Logs');
+    expect(compiled.textContent).toContain('Profile');
   });
 
   it('should redirect the root route to home', async () => {
@@ -64,5 +66,12 @@ describe('App', () => {
     await harness.navigateByUrl('/logs', LogsPage);
 
     expect(harness.routeNativeElement?.querySelector('.logs-page')).not.toBeNull();
+  });
+
+  it('should render the profile route', async () => {
+    const harness = await RouterTestingHarness.create('/');
+    await harness.navigateByUrl('/profile', ProfilePage);
+
+    expect(harness.routeNativeElement?.querySelector('.profile-page')).not.toBeNull();
   });
 });
