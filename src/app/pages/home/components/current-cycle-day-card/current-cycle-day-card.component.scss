@@ -1,0 +1,57 @@
+@use '../../../../../theme/mixins';
+
+:host {
+  display: block;
+}
+
+.metric-card {
+  display: grid;
+  gap: 0.8rem;
+  padding: 1.5rem;
+  border: 1px solid var(--color-border-card);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface-card);
+  box-shadow: var(--shadow-card);
+  backdrop-filter: blur(16px);
+}
+
+.metric-eyebrow {
+  margin: 0;
+  color: var(--color-accent);
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.metric-title {
+  margin: 0;
+  font-size: var(--font-size-title-sm);
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+}
+
+.metric-value {
+  margin: 0.2rem 0 0;
+  color: var(--color-accent-strong);
+  font-size: clamp(3.5rem, 8vw, 5.5rem);
+  font-weight: var(--font-weight-bold);
+  line-height: 0.95;
+}
+
+.metric-value--empty {
+  color: var(--color-text-faint);
+}
+
+.metric-copy {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-body);
+  line-height: 1.65;
+}
+
+@include mixins.below-md {
+  .metric-card {
+    padding: 1.25rem;
+  }
+}

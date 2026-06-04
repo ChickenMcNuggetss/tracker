@@ -43,3 +43,25 @@
   bottom: -8rem;
   background: var(--color-page-glow-right);
 }
+
+.app-shell {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 18rem minmax(0, 1fr);
+  gap: 1.25rem;
+  width: min(100%, 96rem);
+  margin: 0 auto;
+  padding: 1.25rem;
+}
+
+.app-content {
+  min-width: 0;
+}
+
+@include mixins.below-md {
+  .app-shell {
+    grid-template-columns: 1fr;
+    padding: 0.75rem;
+  }
+}

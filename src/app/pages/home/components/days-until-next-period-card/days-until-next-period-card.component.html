@@ -1,0 +1,17 @@
+<article class="metric-card metric-card--next" aria-labelledby="next-period-title">
+  <p class="metric-eyebrow">Forecast</p>
+  <h2 id="next-period-title" class="metric-title">Days until next period</h2>
+
+  @if (daysUntilNextPeriod() !== null) {
+    <p class="metric-value">{{ daysUntilNextPeriod() }}</p>
+    <p class="metric-copy">
+      Based on a {{ cycleLength() }}-day cycle, your next period is expected in
+      {{ daysUntilNextPeriod() }} day{{ daysUntilNextPeriod() === 1 ? '' : 's' }}.
+    </p>
+  } @else {
+    <p class="metric-value metric-value--empty">--</p>
+    <p class="metric-copy">
+      Add a period day in Calendar to see your next forecast.
+    </p>
+  }
+</article>

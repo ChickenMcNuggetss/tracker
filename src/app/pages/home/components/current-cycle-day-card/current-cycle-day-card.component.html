@@ -1,0 +1,16 @@
+<article class="metric-card metric-card--current" aria-labelledby="current-cycle-day-title">
+  <p class="metric-eyebrow">Dashboard</p>
+  <h2 id="current-cycle-day-title" class="metric-title">Current cycle day</h2>
+
+  @if (cycleDay() !== null) {
+    <p class="metric-value">{{ cycleDay() }}</p>
+    <p class="metric-copy">
+      You are on day {{ cycleDay() }} of a {{ cycleLength() }}-day cycle.
+    </p>
+  } @else {
+    <p class="metric-value metric-value--empty">--</p>
+    <p class="metric-copy">
+      Add a period day in Calendar to see your current cycle day.
+    </p>
+  }
+</article>
