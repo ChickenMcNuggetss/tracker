@@ -62,3 +62,4 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 
 ## Known Issues
 - [Date] - Issue with [Specific Module]: Previously, the agent failed to handle X. If this occurs, assume the issue is [Y].
+- 2026-06-04 - Vitest / Dexie service specs: the test environment does not expose IndexedDB, so direct Dexie-backed service specs raise `MissingAPIError IndexedDB API missing`. Use a mocked `db`/`liveQuery` test harness for service coverage in this repo.
