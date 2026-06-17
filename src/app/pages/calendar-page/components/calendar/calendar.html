@@ -3,13 +3,13 @@
   <div class="page-glow page-glow-right" aria-hidden="true"></div> -->
 
 <main class="calendar-layout">
-  <header class="hero-copy">
+  <!-- <header class="hero-copy">
     <p class="eyebrow">Cycle Calendar</p>
     <h1>Track your flow with a calm, simple monthly view.</h1>
     <p class="subtitle">
       Select a day, then toggle it on or off as a period day. Everything stays local to this page.
     </p>
-  </header>
+  </header> -->
 
   <section class="calendar-card" aria-label="Menstrual cycle calendar">
     <div class="calendar-toolbar">
@@ -72,10 +72,20 @@
         <p class="selection-value">{{ selectedDateLabel }}</p>
       </div>
 
-      <app-button [disabled]="!selectedDateKey" (click)="toggleSelectedPeriodDay()">
+      <app-button [disabled]="!selectedDateKey()" (click)="toggleSelectedPeriodDay()">
         {{ toggleLabel }}
       </app-button>
     </div>
   </section>
+
+  @if (selectedDateKey()) {
+    <div class="calendar-details">
+      <app-day-details
+        [dateLabel]="selectedDateLabel"
+        [entry]="selectedLogEntry()"
+        (editRequested)="openEditLogs()"
+      />
+    </div>
+  }
 </main>
 <!-- </section> -->

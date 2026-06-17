@@ -1,0 +1,49 @@
+<main class="profile-page">
+  <section class="profile-card" aria-labelledby="profile-title">
+    <p class="profile-eyebrow">Profile</p>
+    <h1 id="profile-title">Cycle settings</h1>
+    <p class="profile-copy">Set your cycle length and period length to keep the dashboard current.</p>
+
+    <form class="profile-form" [formGroup]="form" (ngSubmit)="save()">
+      <label class="field">
+        <span class="field-label">Cycle length</span>
+        <input
+          type="number"
+          min="1"
+          step="1"
+          inputmode="numeric"
+          formControlName="cycleLength"
+          aria-describedby="cycleLength-help"
+        />
+        <span id="cycleLength-help" class="field-help">Whole number of days in your cycle.</span>
+        @if (form.controls.cycleLength.touched && form.controls.cycleLength.invalid) {
+          <span class="field-error">Enter a whole number greater than zero.</span>
+        }
+      </label>
+
+      <label class="field">
+        <span class="field-label">Period length</span>
+        <input
+          type="number"
+          min="1"
+          step="1"
+          inputmode="numeric"
+          formControlName="periodLength"
+          aria-describedby="periodLength-help"
+        />
+        <span id="periodLength-help" class="field-help">Whole number of days you expect your period to last.</span>
+        @if (form.controls.periodLength.touched && form.controls.periodLength.invalid) {
+          <span class="field-error">Enter a whole number greater than zero.</span>
+        }
+      </label>
+
+      <button
+        type="submit"
+        class="save-button"
+        [disabled]="form.invalid || isSaving()"
+      >
+        Save settings
+      </button>
+    </form>
+  </section>
+</main>

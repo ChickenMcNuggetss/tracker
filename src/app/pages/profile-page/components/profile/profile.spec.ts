@@ -1,8 +1,8 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { CycleSettingsService } from '../../core/services/cycle-settings.service';
-import { ProfilePage } from './profile-page';
+import { CycleSettingsService } from '../../../../core/services/cycle-settings.service';
+import { ProfileComponent } from './profile';
 
 describe('ProfilePage', () => {
   const resolvedSettings = signal({
@@ -16,7 +16,7 @@ describe('ProfilePage', () => {
     saveCycleSettings.mockClear();
 
     await TestBed.configureTestingModule({
-      imports: [ProfilePage],
+      imports: [ProfileComponent],
       providers: [
         {
           provide: CycleSettingsService,
@@ -30,7 +30,7 @@ describe('ProfilePage', () => {
   });
 
   it('renders the cycle settings form only', () => {
-    const fixture = TestBed.createComponent(ProfilePage);
+    const fixture = TestBed.createComponent(ProfileComponent);
     fixture.detectChanges();
 
     const compiled = fixture.nativeElement as HTMLElement;
@@ -44,7 +44,7 @@ describe('ProfilePage', () => {
   });
 
   it('loads the saved settings into the form and persists edits', async () => {
-    const fixture = TestBed.createComponent(ProfilePage);
+    const fixture = TestBed.createComponent(ProfileComponent);
     fixture.detectChanges();
 
     const inputs = fixture.debugElement.queryAll(By.css('input'));

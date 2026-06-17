@@ -1,10 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { liveQuery } from 'dexie';
 import { from } from 'rxjs';
 import { PeriodDayRecord, db } from '../../../../core/db/tracker-db';
+import { LogEntriesService } from '../../../../core/services/log-entries.service';
 import { Button } from '../../../../shared/components/button/button.component';
+import { DayDetailsComponent } from '../day-details/day-details.component';
+import { fromDateKey } from '../../../../shared/utils/fromDateKey';
 
 interface CalendarDay {
   date: Date;
@@ -18,11 +21,14 @@ interface CalendarDay {
 
 @Component({
   selector: 'app-calendar',
-  imports: [CommonModule, Button],
+  imports: [CommonModule, Button, DayDetailsComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './calendar.html',
   styleUrl: './calendar.scss',
 })
 export class Calendar {
+  private readonly logEntriesService = inject(LogEntriesService);
+
   readonly weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
   displayedMonth = signal(this.startOfMonth(new Date()));
@@ -42,13 +48,16 @@ export class Calendar {
 
   initialDays: PeriodDayRecord[] = [];
 
-  periodDays = toSignal(from(liveQuery(() => db.periodDays.toArray())));
+  periodDays = toSignal(from(liveQuery(() => db.periodDays.toArray())), {
+    initialValue: [] as PeriodDayRecord[],
+  });
 
-  calendarDays = computed(() => {
-    if (this.periodDays() || this.displayedMonth() || this.selectedDateKey()) {
-      return this.buildCalendarDays();
-    }
-    return [];
+  calendarDays = computed(() => this.buildCalendarDays());
+
+  readonly selectedLogEntry = computed(() => {
+    const dateKey = this.selectedDateKey();
+
+    return dateKey ? this.logEntriesService.entryForDate(dateKey) : null;
   });
 
   async addNewList(day: CalendarDay) {
@@ -74,7 +83,7 @@ export class Calendar {
       return 'Select a date to mark it as a period day.';
     }
 
-    return this.dateFormatter.format(this.fromDateKey(this.selectedDateKey()!));
+    return this.dateFormatter.format(fromDateKey(this.selectedDateKey()!));
   }
 
   get toggleLabel(): string {
@@ -127,6 +136,16 @@ export class Calendar {
     this.selectedDateKey.set(day.dateKey);
   }
 
+  openEditLogs(): void {
+    const dateKey = this.selectedDateKey();
+
+    if (!dateKey) {
+      return;
+    }
+
+    this.logEntriesService.openEditLog(dateKey);
+  }
+
   toggleSelectedPeriodDay(): void {
     if (!this.selectedDateKey()) {
       return;
@@ -170,10 +189,4 @@ export class Calendar {
 
     return `${year}-${month}-${day}`;
   }
-
-  private fromDateKey(dateKey: string): Date {
-    const [year, month, day] = dateKey.split('-').map(Number);
-    return new Date(year, month - 1, day);
-  }
 }
-

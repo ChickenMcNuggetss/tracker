@@ -1,0 +1,134 @@
+@use '../../../../../theme/mixins';
+
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.profile-page {
+  display: grid;
+  width: min(100%, 72rem);
+  margin: 0 auto;
+  padding: 1rem 0 2rem;
+}
+
+.profile-card {
+  display: grid;
+  gap: 1rem;
+  padding: 1.5rem;
+  border: 1px solid var(--color-border-card);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface-card);
+  box-shadow: var(--shadow-card);
+  backdrop-filter: blur(16px);
+}
+
+.profile-eyebrow {
+  margin: 0;
+  color: var(--color-accent);
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.profile-card h1 {
+  margin: 0;
+  font-size: var(--font-size-title-sm);
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+}
+
+.profile-copy {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-body);
+  line-height: 1.65;
+}
+
+.profile-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.field {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.field-label {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-semibold);
+}
+
+.field-help {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-weekday);
+  line-height: 1.45;
+}
+
+.field-error {
+  color: var(--color-period-text);
+  font-size: var(--font-size-weekday);
+  font-weight: var(--font-weight-semibold);
+}
+
+input {
+  width: 100%;
+  min-height: 3rem;
+  padding: 0.8rem 0.95rem;
+  border: 1px solid var(--color-border-control);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-cell);
+  color: var(--color-text-primary);
+  font: inherit;
+  transition: var(--transition-interactive);
+
+  @include mixins.focus-ring;
+}
+
+input:hover {
+  border-color: var(--color-border-today);
+}
+
+input:focus {
+  outline: none;
+}
+
+.save-button {
+  justify-self: start;
+  min-height: 3rem;
+  padding: 0.8rem 1.2rem;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(
+    180deg,
+    var(--color-button-primary-start) 0%,
+    var(--color-button-primary-end) 100%
+  );
+  color: var(--color-button-text);
+  font-size: var(--font-size-button);
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+  box-shadow: var(--shadow-button-primary);
+  transition: var(--transition-interactive);
+
+  @include mixins.focus-ring;
+}
+
+.save-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.save-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+@include mixins.below-md {
+  .profile-card {
+    padding: 1.25rem;
+  }
+}

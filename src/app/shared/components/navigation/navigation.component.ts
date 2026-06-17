@@ -18,7 +18,6 @@ export class AppNavigation {
   readonly navItems: NavItem[] = [
     { label: 'Dashboard', path: '/home', exact: true },
     { label: 'Calendar', path: '/calendar', exact: true },
-    { label: 'Logs', path: '/logs', exact: true },
     { label: 'Profile', path: '/profile', exact: true },
   ];
 }

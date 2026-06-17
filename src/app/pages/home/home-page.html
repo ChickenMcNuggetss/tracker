@@ -1,10 +1,8 @@
-<main class="dashboard-page">
+<div class="dashboard-page">
   <header class="dashboard-hero">
     <p class="dashboard-eyebrow">Home dashboard</p>
     <h1>Track your cycle at a glance.</h1>
-    <p class="dashboard-copy">
-      Your latest period days and cycle settings power the cards below.
-    </p>
+    <p class="dashboard-copy">Your latest period days and cycle settings power the cards below.</p>
   </header>
 
   <section class="dashboard-grid" aria-label="Cycle overview">
@@ -18,4 +16,15 @@
       [cycleLength]="dashboard().cycleLength"
     />
   </section>
-</main>
+
+  <section class="dashboard-logs" aria-label="Quick log">
+    <div class="calendar-details">
+      <app-day-details
+        [dateLabel]="formattedSelectedDateKey"
+        [entry]="selectedLogEntry()"
+        (editRequested)="openEditLogs()"
+      />
+    </div>
+  </section>
+</div>
+<app-log-overlay />

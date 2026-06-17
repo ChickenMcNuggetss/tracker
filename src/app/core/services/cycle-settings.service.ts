@@ -41,6 +41,10 @@ export class CycleSettingsService {
     await db.cycleSettings.put(nextSettings);
   }
 
+  async hasSavedCycleSettings(): Promise<boolean> {
+    return !!(await db.cycleSettings.get('default'));
+  }
+
   private normalize(value: number): number {
     return Math.max(1, Math.trunc(value));
   }

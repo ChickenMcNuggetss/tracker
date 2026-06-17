@@ -1,0 +1,59 @@
+<section class="day-details-card" aria-labelledby="day-details-title">
+  <header class="day-details-header">
+    <div class="day-details-heading">
+      <p class="day-details-eyebrow">Day Details</p>
+      <h2 id="day-details-title">{{ dateLabel() }}</h2>
+    </div>
+
+    <button type="button" class="day-details-edit" (click)="openEditor()">
+      Edit Logs <span aria-hidden="true">✎</span>
+    </button>
+  </header>
+
+  @if (entry(); as log) {
+    <div class="day-details-grid">
+      <article class="detail-card detail-card--flow">
+        <div class="detail-card__badge" aria-hidden="true">☂</div>
+        <p class="detail-card__label">Flow intensity</p>
+        <p class="detail-card__value">{{ flowLabel() }}</p>
+      </article>
+
+      <article class="detail-card detail-card--symptoms">
+        <div class="detail-card__badge" aria-hidden="true">✚</div>
+        <p class="detail-card__label">Symptoms</p>
+
+        @if (symptoms().length) {
+          <div class="detail-pill-list">
+            @for (symptom of symptoms(); track symptom) {
+              <span class="detail-pill">{{ symptom }}</span>
+            }
+          </div>
+        } @else {
+          <p class="detail-card__empty">No symptoms logged.</p>
+        }
+      </article>
+
+      <article class="detail-card detail-card--mood">
+        <div class="detail-card__badge detail-card__badge--mood" aria-hidden="true">
+          {{ mood()?.icon ?? '☺' }}
+        </div>
+
+        <div class="detail-card__body">
+          <p class="detail-card__label">Mood</p>
+          <p class="detail-card__value detail-card__value--wrap">
+            {{ mood()?.label ?? 'No mood logged' }}
+          </p>
+        </div>
+
+        <div class="mood-meter" aria-hidden="true">
+          <span class="mood-meter__fill" [style.width.%]="moodMeterValue()"></span>
+        </div>
+      </article>
+    </div>
+  } @else {
+    <div class="day-details-empty">
+      <p>No log saved for this day yet.</p>
+      <p>Use Edit Logs to capture flow, symptoms, and mood.</p>
+    </div>
+  }
+</section>

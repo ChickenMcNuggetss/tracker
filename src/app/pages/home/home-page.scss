@@ -46,6 +46,11 @@
   gap: 1rem;
 }
 
+.dashboard-logs {
+  display: grid;
+  gap: 1rem;
+}
+
 @include mixins.below-md {
   .dashboard-page {
     gap: 1.25rem;

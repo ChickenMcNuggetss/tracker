@@ -86,13 +86,15 @@ describe('CycleSettingsService', () => {
     listeners.clear();
   });
 
-  it('returns default values when no settings are stored', () => {
+  it('returns default values when no settings are stored', async () => {
     const service = TestBed.inject(CycleSettingsService);
 
     expect(service.resolvedSettings()).toEqual({
       cycleLength: 28,
       periodLength: 5,
     });
+    expect(getMock).toHaveBeenCalledWith('default');
+    expect(await service.hasSavedCycleSettings()).toBe(false);
   });
 
   it('persists and exposes saved settings', async () => {
@@ -116,5 +118,6 @@ describe('CycleSettingsService', () => {
       cycleLength: 31,
       periodLength: 6,
     });
+    expect(await service.hasSavedCycleSettings()).toBe(true);
   });
 });
