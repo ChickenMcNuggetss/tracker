@@ -1,7 +1,8 @@
 @use '../../../../theme/mixins';
 
 :host {
-  display: block;
+  display: sticky;
+  z-index: 1000;
 }
 
 .navigation-shell {
@@ -86,9 +87,6 @@
 }
 
 @include mixins.below-md {
-  .navigation-shell {
-    position: static;
-  }
 
   .navigation-list {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -97,6 +95,15 @@
   .navigation-link {
     justify-content: center;
     text-align: center;
+  }
+
+  .navigation-shell {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    top: 90svh;
+    left: 0;
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
   }
 }
 

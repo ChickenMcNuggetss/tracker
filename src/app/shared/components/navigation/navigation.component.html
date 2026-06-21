@@ -2,7 +2,7 @@
   <!-- <div class="brand-block">
     <p class="brand-eyebrow">Cycle tracker</p>
     <h1 class="brand-title">Tracker</h1> -->
-    <!-- <p class="brand-copy">Your dashboard, calendar, logs, and profile in one calm shell.</p> -->
+  <!-- <p class="brand-copy">Your dashboard, calendar, logs, and profile in one calm shell.</p> -->
   <!-- </div> -->
 
   <nav class="navigation" aria-label="Primary">
@@ -17,7 +17,13 @@
             #activeLink="routerLinkActive"
             [attr.aria-current]="activeLink.isActive ? 'page' : null"
           >
-            <span class="navigation-link-label">{{ item.label }}</span>
+            <span class="navigation-link-label">
+              @if (isMobile()) {
+                <mat-icon>{{ item.icon }}</mat-icon>
+              } @else {
+                {{ item.label }}
+              }
+            </span>
           </a>
         </li>
       }
