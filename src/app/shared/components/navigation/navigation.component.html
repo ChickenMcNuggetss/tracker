@@ -17,13 +17,16 @@
             #activeLink="routerLinkActive"
             [attr.aria-current]="activeLink.isActive ? 'page' : null"
           >
-            <span class="navigation-link-label">
-              @if (isMobile()) {
+            @if (isMobile()) {
+              <span class="navigation-link-icon">
                 <mat-icon>{{ item.icon }}</mat-icon>
-              } @else {
-                {{ item.label }}
-              }
-            </span>
+              </span>
+            }
+            @if (!isMobile()) {
+              <span class="navigation-link-label">
+                <span>{{ item.label }}</span>
+              </span>
+            }
           </a>
         </li>
       }

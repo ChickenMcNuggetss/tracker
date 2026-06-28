@@ -21,16 +21,31 @@ export class AppNavigation {
   breakpointObserver = inject(BreakpointObserver);
 
   readonly navItems: NavItem[] = [
-    { label: 'Dashboard', icon: 'dashboard', path: '/home', exact: true },
-    { label: 'Calendar', icon: 'calendar_today', path: '/calendar', exact: true },
-    { label: 'Profile', icon: 'person', path: '/profile', exact: true },
+    {
+      label: 'Dashboard',
+      icon: 'dashboard',
+      path: '/home',
+      exact: true,
+    },
+    {
+      label: 'Calendar',
+      icon: 'calendar_today',
+      path: '/calendar',
+      exact: true,
+    },
+    {
+      label: 'Profile',
+      icon: 'person',
+      path: '/profile',
+      exact: true,
+    },
   ];
 
   protected isMobile = signal(false);
   protected isMenuOpen = signal(false);
 
   constructor() {
-    this.breakpointObserver.observe('(max-width: 767px)').subscribe((result) => {
+    this.breakpointObserver.observe('(max-width: 740px)').subscribe((result) => {
       this.isMobile.set(result.matches);
     });
   }

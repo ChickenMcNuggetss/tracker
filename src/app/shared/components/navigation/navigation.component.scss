@@ -1,21 +1,21 @@
 @use '../../../../theme/mixins';
 
-:host {
-  display: sticky;
-  z-index: 1000;
+.navigation {
+  margin: 5px;
 }
 
 .navigation-shell {
-  position: sticky;
+  position: fixed;
   top: 1.25rem;
+  left: 1.25rem;
   display: grid;
   gap: 1.25rem;
-  padding: 1.25rem;
   border: 1px solid var(--color-border-card);
   border-radius: var(--radius-xl);
   background: var(--color-surface-card);
   box-shadow: var(--shadow-card);
   backdrop-filter: blur(16px);
+  z-index: 20;
 }
 
 .brand-block {
@@ -66,6 +66,7 @@
   color: var(--color-text-secondary);
   text-decoration: none;
   transition: var(--transition-interactive);
+  font-weight: var(--font-weight-bold);
 
   @include mixins.focus-ring;
 }
@@ -87,28 +88,31 @@
 }
 
 @include mixins.below-md {
+  .navigation-shell {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: revert-layer;
+
+    height: 72px;
+
+    background: var(--color-surface-card);
+    border-top: 1px solid var(--color-border-card);
+
+    margin: 0 0.75rem;
+  }
 
   .navigation-list {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    display: flex;
+    justify-content: space-around;
   }
 
   .navigation-link {
+    position: relative;
     justify-content: center;
     text-align: center;
-  }
-
-  .navigation-shell {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    top: 90svh;
-    left: 0;
-    border-radius: var(--radius-md) var(--radius-md) 0 0;
-  }
-}
-
-@include mixins.below-sm {
-  .navigation-list {
-    grid-template-columns: 1fr;
+    border: 1px solid var(--color-border-cell);
+    background: none;
   }
 }

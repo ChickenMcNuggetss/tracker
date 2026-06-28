@@ -260,13 +260,16 @@
   }
 
   .day-cell {
-    min-height: 4.6rem;
     border-radius: var(--radius-sm);
   }
 
   .selection-panel {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .period-indicator {
+    display: none;
   }
 }
 
@@ -290,7 +293,7 @@
   }
 
   .day-cell {
-    min-height: 4.15rem;
+    min-height: 1rem;
     padding: 0.55rem 0.45rem;
   }
 
