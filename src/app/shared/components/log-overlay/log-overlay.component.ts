@@ -3,13 +3,12 @@ import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
-  effect,
   inject,
   computed,
 } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { FlowIntensity, MoodKey, SymptomKey } from '../../../core/db/tracker-db';
-import { LogEntriesService, LogFormValue } from '../../../core/services/log-entries.service';
+import { LogEntriesService } from '../../../core/services/log-entries.service';
 
 interface FlowOption {
   value: FlowIntensity;
@@ -50,15 +49,6 @@ const SYMPTOM_OPTIONS: SymptomOption[] = [
   { value: 'tender', label: 'Tender' },
   { value: 'fatigue', label: 'Fatigue' },
 ];
-
-const DEFAULT_FORM_VALUE: LogFormValue = {
-  flowIntensity: 'none',
-  symptoms: [],
-  mood: 'calm',
-  sexualActivity: false,
-  vaginalDischarge: false,
-  notes: '',
-};
 
 @Component({
   selector: 'app-log-overlay',
@@ -122,35 +112,6 @@ export class LogOverlayComponent {
   });
 
   constructor() {
-    // effect(() => {
-    //   const state = this.overlayState();
-    //   console.log('Overlay state changed:', state);
-    //   if (!state) {
-    //     this.form.reset(DEFAULT_FORM_VALUE, { emitEvent: false });
-    //     this.form.markAsPristine();
-    //     this.document.body.style.overflow = '';
-    //     return;
-    //   }
-
-    //   const existing = this.logEntriesService.entryForDate(state.dateKey);
-
-    //   this.form.reset(
-    //     existing
-    //       ? {
-    //           flowIntensity: existing.flowIntensity,
-    //           symptoms: [...existing.symptoms],
-    //           mood: existing.mood,
-    //           sexualActivity: existing.sexualActivity,
-    //           vaginalDischarge: existing.vaginalDischarge,
-    //           notes: existing.notes,
-    //         }
-    //       : DEFAULT_FORM_VALUE,
-    //     { emitEvent: false },
-    //   );
-    //   this.form.markAsPristine();
-    //   this.document.body.style.overflow = 'hidden';
-    // });
-
     this.destroyRef.onDestroy(() => {
       this.document.body.style.overflow = '';
     });

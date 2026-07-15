@@ -6,11 +6,10 @@ import { db, type PeriodDayRecord } from '../../core/db/tracker-db';
 import { CycleSettingsService } from '../../core/services/cycle-settings.service';
 import { DaysUntilNextPeriodCardComponent } from './components/days-until-next-period-card/days-until-next-period-card.component';
 import { CurrentCycleDayCardComponent } from './components/current-cycle-day-card/current-cycle-day-card.component';
-//import { QuickLogDashboardComponent } from './components/quick-log-dashboard/quick-log-dashboard.component';
 import { summarizeCycleDashboard } from './utils/cycle-metrics';
 import { LogOverlayComponent } from '../../shared/components/log-overlay/log-overlay.component';
 import { DayDetailsComponent } from '../calendar-page/components/day-details/day-details.component';
-import { startOfDay } from 'date-fns';
+import { format } from 'date-fns';
 import { LogEntriesService } from '../../core/services/log-entries.service';
 import { fromDateKey } from '../../shared/utils/fromDateKey';
 
@@ -30,7 +29,7 @@ export class HomePage {
   private readonly cycleSettingsService = inject(CycleSettingsService);
   private readonly logEntriesService = inject(LogEntriesService);
 
-  protected selectedDateKey = startOfDay(new Date()).toISOString().split('T')[0];
+  protected selectedDateKey = format(new Date(), 'yyyy-MM-dd');
 
   private readonly dateFormatter = new Intl.DateTimeFormat('en-US', {
     weekday: 'long',
@@ -39,7 +38,6 @@ export class HomePage {
   });
 
   get formattedSelectedDateKey() {
-    console.warn(this.dateFormatter.format(fromDateKey(this.selectedDateKey)), 'AAAAA');
     return this.dateFormatter.format(fromDateKey(this.selectedDateKey));
   }
 
