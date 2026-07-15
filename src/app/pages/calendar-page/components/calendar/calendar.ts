@@ -2,12 +2,13 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { liveQuery } from 'dexie';
-import { from } from 'rxjs';
+import { from, tap } from 'rxjs';
 import { PeriodDayRecord, db } from '../../../../core/db/tracker-db';
 import { LogEntriesService } from '../../../../core/services/log-entries.service';
 import { Button } from '../../../../shared/components/button/button.component';
 import { DayDetailsComponent } from '../day-details/day-details.component';
 import { fromDateKey } from '../../../../shared/utils/fromDateKey';
+import { CyclePrediction } from '../../../../core/services/cycle-prediction';
 
 interface CalendarDay {
   date: Date;
@@ -28,6 +29,7 @@ interface CalendarDay {
 })
 export class Calendar {
   private readonly logEntriesService = inject(LogEntriesService);
+  private readonly cyclePredictionService = inject(CyclePrediction);
 
   readonly weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
@@ -59,6 +61,8 @@ export class Calendar {
 
     return dateKey ? this.logEntriesService.entryForDate(dateKey) : null;
   });
+
+  cyclePrediction = computed(() => this.cyclePredictionService.cyclePredictions());
 
   async addNewList(day: CalendarDay) {
     await db.periodDays.add({
@@ -159,16 +163,31 @@ export class Calendar {
         (day) => day.dateKey === this.selectedDateKey(),
       );
       if (selectedDate) {
-        from(this.addNewList(selectedDate!)).subscribe();
+        from(this.addNewList(selectedDate!))
+          .pipe(
+            tap(() => {
+              const periodDays = this.periodDays()
+                .filter((date, index, arr) => {
+                  if (index === 0) return true;
+
+                  const prev = arr[index - 1];
+
+                  return date.year !== prev.year || date.month !== prev.month;
+                })
+                .map((record) => {
+                  return {
+                    date: record.dateKey,
+                  };
+                });
+              this.cyclePredictionService.calculatePredictions({ periodStarts: periodDays });
+            }),
+          )
+          .subscribe();
       }
       if (this.selectedDateKey()) {
         this.periodDates = [...this.periodDates, this.selectedDateKey()!];
       }
     }
-  }
-
-  trackByDateKey(_: number, day: CalendarDay): string {
-    return day.dateKey;
   }
 
   private isPeriodDay(dateKey: string) {
@@ -188,5 +207,19 @@ export class Calendar {
     const day = `${date.getDate()}`.padStart(2, '0');
 
     return `${year}-${month}-${day}`;
+  }
+
+  isDateInRange(date: Date | string, range: { start: string; end: string } | null): boolean {
+    if (!range || !range.start || !range.end) {
+      return false;
+    }
+    const target =
+      typeof date === 'string'
+        ? new Date(`${date}T00:00:00`)
+        : new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+    const start = new Date(`${range.start}T00:00:00`);
+    const end = new Date(`${range.end}T00:00:00`);
+    return !!(target >= start && target <= end);
   }
 }

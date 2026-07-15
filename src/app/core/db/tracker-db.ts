@@ -1,3 +1,4 @@
+import { PredictionResult } from 'cyclia';
 import Dexie, { type EntityTable } from 'dexie';
 
 export const TRACKER_DB_NAME = 'tracker-db';
@@ -34,14 +35,18 @@ export interface CycleLogRecord {
   updatedAt: string;
 }
 
+export type PeriodPrediction = PredictionResult & { id: 'default'; updatedAt: string };
+
 const db = new Dexie('TrackerApp') as Dexie & {
   periodDays: EntityTable<PeriodDayRecord, 'dateKey'>;
+  cyclePredictions: EntityTable<PeriodPrediction, 'id'>;
   cycleSettings: EntityTable<CycleSettingsRecord, 'id'>;
   logEntries: EntityTable<CycleLogRecord, 'dateKey'>;
 };
 
 db.version(TRACKER_DB_VERSION + 1).stores({
   periodDays: 'dateKey, [year+month], updatedAt',
+  cyclePredictions: 'id, updatedAt',
   cycleSettings: 'id, updatedAt',
   logEntries: 'dateKey, updatedAt',
 });

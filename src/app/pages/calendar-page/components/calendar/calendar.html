@@ -1,7 +1,3 @@
-<!-- <section class="page-shell">
-  <div class="page-glow page-glow-left" aria-hidden="true"></div>
-  <div class="page-glow page-glow-right" aria-hidden="true"></div> -->
-
 <main class="calendar-layout">
   <!-- <header class="hero-copy">
     <p class="eyebrow">Cycle Calendar</p>
@@ -40,7 +36,7 @@
 
     @if (!!calendarDays().length) {
       <div class="calendar-grid" role="grid" aria-label="Monthly calendar">
-        @for (day of calendarDays(); track trackByDateKey($index, day)) {
+        @for (day of calendarDays(); track day.dateKey) {
           <button
             type="button"
             class="day-cell"
@@ -50,6 +46,7 @@
             [class.today]="day.isToday"
             [attr.aria-pressed]="day.isSelected"
             [attr.aria-label]="day.date | date: 'fullDate'"
+            [class.next-period]="isDateInRange(day.dateKey, cyclePrediction()?.window ?? null)"
             (click)="selectDate(day)"
           >
             <span class="day-number">{{ day.dayNumber }}</span>
@@ -88,4 +85,3 @@
     </div>
   }
 </main>
-<!-- </section> -->

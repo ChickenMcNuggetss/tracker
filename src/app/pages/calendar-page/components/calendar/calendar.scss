@@ -2,47 +2,9 @@
 
 :host {
   display: block;
-  min-height: 100vh;
-  // color: var(--color-text-primary);
-  // font-family: var(--font-family-base);
+  min-height: 100svh;
 }
 
-// .page-shell {
-//   position: relative;
-//   min-height: 100vh;
-//   overflow: hidden;
-//   background:
-//     radial-gradient(circle at top left, var(--color-page-radial-left), transparent 32%),
-//     radial-gradient(circle at right center, var(--color-page-radial-right), transparent 28%),
-//     linear-gradient(
-//       180deg,
-//       var(--color-page-bg-start) 0%,
-//       var(--color-page-bg-middle) 48%,
-//       var(--color-page-bg-end) 100%
-//     );
-// }
-
-// .page-glow {
-//   position: absolute;
-//   width: 22rem;
-//   height: 22rem;
-//   border-radius: 50%;
-//   filter: blur(18px);
-//   opacity: 0.55;
-//   pointer-events: none;
-// }
-
-// .page-glow-left {
-//   top: -7rem;
-//   left: -7rem;
-//   background: var(--color-page-glow-left);
-// }
-
-// .page-glow-right {
-//   right: -8rem;
-//   bottom: -8rem;
-//   background: var(--color-page-glow-right);
-// }
 
 .calendar-layout {
   position: relative;
@@ -214,6 +176,15 @@
   box-shadow: 0 0 0 3px var(--color-ring-selected);
 }
 
+.next-period {
+  color: var(--color-accent);
+  background: radial-gradient(
+   var(--color-page-glow-right),
+    var(--color-page-bg-middle) 75%
+  );
+  box-shadow: 0;
+}
+
 .period-day {
   border-color: var(--color-accent-period);
   background: linear-gradient(
@@ -299,5 +270,11 @@
 
   .today-label {
     display: none;
+  }
+
+  .calendar-layout {
+    padding: 0;
+    margin: 0;
+    width: 100%;
   }
 }

@@ -1,4 +1,4 @@
-import { Injectable, computed } from '@angular/core';
+import { Injectable, Service, computed } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { liveQuery } from 'dexie';
 import { from } from 'rxjs';
@@ -12,9 +12,7 @@ export interface CycleSettingsValue {
 const DEFAULT_CYCLE_LENGTH = 28;
 const DEFAULT_PERIOD_LENGTH = 5;
 
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class CycleSettingsService {
   readonly cycleSettings = toSignal(
     from(liveQuery(() => db.cycleSettings.get('default'))),
