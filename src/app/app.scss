@@ -1,14 +1,13 @@
 @use '../theme/mixins';
 
 :host {
-  display: block;
-  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
   color: var(--color-text-primary);
   font-family: var(--font-family-base);
 }
 
 .page-shell {
-  min-height: 100vh;
   overflow: hidden;
   background:
     radial-gradient(circle at top left, var(--color-page-radial-left), transparent 32%),
@@ -57,5 +56,13 @@
 @include mixins.below-md {
   .app-shell {
     width: 100%;
+  }
+
+  :host {
+    height: calc(100svh - 3rem);
+  }
+
+  .page-shell {
+    overflow: scroll;
   }
 }

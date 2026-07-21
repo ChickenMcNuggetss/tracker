@@ -1,5 +1,9 @@
 @use '../../../../theme/mixins';
 
+:host {
+  overflow: hidden;
+}
+
 .is-open {
   position: fixed;
   inset: 0;
@@ -28,6 +32,11 @@
   padding: 1.25rem;
   border: 1px solid var(--color-border-card);
   border-radius: var(--radius-xl);
+  overflow: scroll;
+  scrollbar-color: rgba(184, 120, 147, 0.22) transparent;
+  scrollbar-width: thin;
+  scrollbar-gutter: stable;
+  margin: var(--space-2xs);
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(255, 248, 251, 0.96)),
     var(--color-surface-card);

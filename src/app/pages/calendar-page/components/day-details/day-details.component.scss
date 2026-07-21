@@ -83,8 +83,8 @@
 .detail-card__badge {
   display: grid;
   place-items: center;
-  width: 4rem;
-  height: 4rem;
+  width: 3rem;
+  height: 3rem;
   border-radius: 50%;
   background: rgba(236, 205, 216, 0.24);
   color: var(--color-accent-emphasis);
@@ -107,7 +107,7 @@
 .detail-card__value {
   margin: 0;
   color: var(--color-accent-strong);
-  font-size: clamp(2rem, 4vw, 3rem);
+  font-size: 16px;
   font-weight: var(--font-weight-bold);
   line-height: 1;
 }
@@ -151,7 +151,11 @@
   display: block;
   height: 100%;
   border-radius: inherit;
-  background: linear-gradient(180deg, var(--color-button-primary-start), var(--color-button-primary-end));
+  background: linear-gradient(
+    180deg,
+    var(--color-button-primary-start),
+    var(--color-button-primary-end)
+  );
 }
 
 .day-details-empty {
@@ -196,4 +200,17 @@
   .detail-card--mood {
     grid-template-columns: 1fr;
   }
+}
+
+.notes-field {
+  width: 100%;
+  resize: none;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--color-border-card);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-cell);
+  color: var(--color-text-primary);
+  font: inherit;
+
+  @include mixins.focus-ring;
 }

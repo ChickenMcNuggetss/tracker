@@ -1,6 +1,11 @@
 @if (overlayState(); as state) {
   <div class="log-overlay" [class.is-open]="overlayState()">
-    <div class="overlay-backdrop" [class.hidden]="!overlayState()" role="presentation" (click)="backdropClick()">
+    <div
+      class="overlay-backdrop"
+      [class.hidden]="!overlayState()"
+      role="presentation"
+      (click)="backdropClick()"
+    >
       <section
         class="overlay-panel"
         role="dialog"
@@ -23,101 +28,108 @@
           </div>
         </header>
 
-        <form class="log-form" [formGroup]="form">
-          <section class="log-section">
-            <p class="log-section__label">Flow intensity</p>
-            <div class="segmented-control" role="radiogroup" aria-label="Flow intensity">
-              @for (option of flowOptions; track option.value) {
+        @if (form) {
+          <form class="log-form" [formGroup]="form">
+            <section class="log-section">
+              <p class="log-section__label">Flow intensity</p>
+              <div class="segmented-control" role="radiogroup" aria-label="Flow intensity">
+                @for (option of flowOptions; track option.value) {
+                  <button
+                    type="button"
+                    class="segmented-control__button"
+                    [class.is-active]="$any(form).controls.flowIntensity.value === option.value"
+                    [attr.aria-pressed]="$any(form).controls.flowIntensity.value === option.value"
+                    (click)="setFlowIntensity(option.value)"
+                  >
+                    {{ option.label }}
+                  </button>
+                }
+              </div>
+            </section>
+
+            <section class="log-section">
+              <p class="log-section__label">Symptoms</p>
+              <div class="symptoms-grid">
+                @for (option of symptomOptions; track option.value) {
+                  <button
+                    type="button"
+                    class="symptom-chip"
+                    [class.is-selected]="isSymptomSelected(option.value)"
+                    [attr.aria-pressed]="isSymptomSelected(option.value)"
+                    (click)="toggleSymptom(option.value)"
+                  >
+                    {{ option.label }}
+                  </button>
+                }
+              </div>
+            </section>
+
+            <section class="log-section">
+              <p class="log-section__label">Daily mood</p>
+              <div class="mood-grid" role="radiogroup" aria-label="Daily mood">
+                @for (option of moodOptions; track option.value) {
+                  <button
+                    type="button"
+                    class="mood-option"
+                    [class.is-selected]="$any(form).controls.mood.value === option.value"
+                    [attr.aria-pressed]="$any(form).controls.mood.value === option.value"
+                    (click)="setMood(option.value)"
+                  >
+                    <span class="mood-option__icon" aria-hidden="true">{{ option.icon }}</span>
+                    <span class="mood-option__label">{{ option.label }}</span>
+                  </button>
+                }
+              </div>
+            </section>
+
+            <section class="log-section">
+              <p class="log-section__label">Body signals</p>
+              <div class="signal-list">
                 <button
                   type="button"
-                  class="segmented-control__button"
-                  [class.is-active]="form.controls.flowIntensity.value === option.value"
-                  [attr.aria-pressed]="form.controls.flowIntensity.value === option.value"
-                  (click)="setFlowIntensity(option.value)"
+                  class="signal-row"
+                  [class.is-on]="$any(form).controls.sexualActivity.value"
+                  (click)="toggleSignal('sexualActivity')"
                 >
-                  {{ option.label }}
+                  <span class="signal-row__label">Sexual Activity</span>
+                  <span class="signal-switch" aria-hidden="true"></span>
                 </button>
-              }
-            </div>
-          </section>
 
-          <section class="log-section">
-            <p class="log-section__label">Symptoms</p>
-            <div class="symptoms-grid">
-              @for (option of symptomOptions; track option.value) {
                 <button
                   type="button"
-                  class="symptom-chip"
-                  [class.is-selected]="isSymptomSelected(option.value)"
-                  [attr.aria-pressed]="isSymptomSelected(option.value)"
-                  (click)="toggleSymptom(option.value)"
+                  class="signal-row"
+                  [class.is-on]="$any(form).controls.vaginalDischarge.value"
+                  (click)="toggleSignal('vaginalDischarge')"
                 >
-                  {{ option.label }}
+                  <span class="signal-row__label">Vaginal Discharge</span>
+                  <span class="signal-switch" aria-hidden="true"></span>
                 </button>
-              }
-            </div>
-          </section>
+              </div>
+            </section>
 
-          <section class="log-section">
-            <p class="log-section__label">Daily mood</p>
-            <div class="mood-grid" role="radiogroup" aria-label="Daily mood">
-              @for (option of moodOptions; track option.value) {
-                <button
-                  type="button"
-                  class="mood-option"
-                  [class.is-selected]="form.controls.mood.value === option.value"
-                  [attr.aria-pressed]="form.controls.mood.value === option.value"
-                  (click)="setMood(option.value)"
-                >
-                  <span class="mood-option__icon" aria-hidden="true">{{ option.icon }}</span>
-                  <span class="mood-option__label">{{ option.label }}</span>
-                </button>
-              }
-            </div>
-          </section>
+            <section class="log-section">
+              <p class="log-section__label">Daily notes</p>
+              <textarea
+                class="notes-field"
+                rows="5"
+                placeholder="How are you feeling today?"
+                formControlName="notes"
+              ></textarea>
+            </section>
 
-          <section class="log-section">
-            <p class="log-section__label">Body signals</p>
-            <div class="signal-list">
+            <footer class="overlay-actions">
+              <button type="button" class="secondary-button" (click)="close()">Cancel</button>
               <button
                 type="button"
-                class="signal-row"
-                [class.is-on]="form.controls.sexualActivity.value"
-                (click)="toggleSignal('sexualActivity')"
+                class="primary-button"
+                [disabled]="$any(form).invalid"
+                (click)="save()"
               >
-                <span class="signal-row__label">Sexual Activity</span>
-                <span class="signal-switch" aria-hidden="true"></span>
+                Save log
               </button>
-
-              <button
-                type="button"
-                class="signal-row"
-                [class.is-on]="form.controls.vaginalDischarge.value"
-                (click)="toggleSignal('vaginalDischarge')"
-              >
-                <span class="signal-row__label">Vaginal Discharge</span>
-                <span class="signal-switch" aria-hidden="true"></span>
-              </button>
-            </div>
-          </section>
-
-          <section class="log-section">
-            <p class="log-section__label">Daily notes</p>
-            <textarea
-              class="notes-field"
-              rows="5"
-              placeholder="How are you feeling today?"
-              formControlName="notes"
-            ></textarea>
-          </section>
-
-          <footer class="overlay-actions">
-            <button type="button" class="secondary-button" (click)="close()">Cancel</button>
-            <button type="button" class="primary-button" [disabled]="form.invalid" (click)="save()">
-              Save log
-            </button>
-          </footer>
-        </form>
+            </footer>
+          </form>
+        }
       </section>
     </div>
   </div>

@@ -44,9 +44,18 @@
             {{ mood()?.label ?? 'No mood logged' }}
           </p>
         </div>
+      </article>
 
-        <div class="mood-meter" aria-hidden="true">
-          <span class="mood-meter__fill" [style.width.%]="moodMeterValue()"></span>
+      <article class="detail-card">
+        <div class="detail-card__body">
+          <p class="detail-card__label">Notes</p>
+          <textarea
+            class="detail-card__value"
+            [disabled]="true"
+            class="notes-field"
+            rows="5"
+            [value]="notes()"
+          ></textarea>
         </div>
       </article>
     </div>

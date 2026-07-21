@@ -58,7 +58,6 @@ export class Calendar {
 
   readonly selectedLogEntry = computed(() => {
     const dateKey = this.selectedDateKey();
-
     return dateKey ? this.logEntriesService.entryForDate(dateKey) : null;
   });
 
@@ -142,11 +141,10 @@ export class Calendar {
 
   openEditLogs(): void {
     const dateKey = this.selectedDateKey();
-
     if (!dateKey) {
       return;
     }
-
+    console.log(dateKey, 'dateKey on open');
     this.logEntriesService.openEditLog(dateKey);
   }
 

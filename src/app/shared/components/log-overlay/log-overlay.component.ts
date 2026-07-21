@@ -1,12 +1,13 @@
-import { DOCUMENT } from '@angular/common';
+import { DOCUMENT, JsonPipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
   inject,
   computed,
+  effect,
 } from '@angular/core';
-import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { FlowIntensity, MoodKey, SymptomKey } from '../../../core/db/tracker-db';
 import { LogEntriesService } from '../../../core/services/log-entries.service';
 
@@ -24,6 +25,15 @@ interface MoodOption {
 interface SymptomOption {
   value: SymptomKey;
   label: string;
+}
+
+interface OverlayForm {
+  flowIntensity: FormControl<FlowIntensity>;
+  symptoms: FormControl<SymptomKey[]>;
+  mood: FormControl<MoodKey>;
+  sexualActivity: FormControl<boolean>;
+  vaginalDischarge: FormControl<boolean>;
+  notes: FormControl<string>;
 }
 
 const FLOW_OPTIONS: FlowOption[] = [
@@ -98,7 +108,17 @@ export class LogOverlayComponent {
     return this.formatDate(state.dateKey);
   });
 
-  readonly form = this.fb.group({
+  readonly entryLog = computed(() => {
+    const state = this.overlayState();
+
+    if (!state) {
+      return null;
+    }
+
+    return this.logEntriesService.entryForDate(state.dateKey);
+  });
+
+  readonly form = this.fb.group<OverlayForm>({
     flowIntensity: this.fb.nonNullable.control<FlowIntensity>('none', {
       validators: [Validators.required],
     }),
@@ -114,6 +134,17 @@ export class LogOverlayComponent {
   constructor() {
     this.destroyRef.onDestroy(() => {
       this.document.body.style.overflow = '';
+    });
+
+    effect(() => {
+      const state = this.overlayState();
+
+      if (!state) {
+        this.resetForm();
+        return;
+      }
+
+      this.patchFormFromEntry(this.entryLog());
     });
   }
 
@@ -181,6 +212,34 @@ export class LogOverlayComponent {
     });
 
     this.logEntriesService.closeOverlay();
+  }
+
+  private patchFormFromEntry(entry: ReturnType<typeof this.entryLog>): void {
+    this.form.patchValue(
+      {
+        flowIntensity: entry?.flowIntensity ?? 'none',
+        symptoms: entry?.symptoms ?? [],
+        mood: entry?.mood ?? 'calm',
+        sexualActivity: entry?.sexualActivity ?? false,
+        vaginalDischarge: entry?.vaginalDischarge ?? false,
+        notes: entry?.notes ?? '',
+      },
+      { emitEvent: false },
+    );
+  }
+
+  private resetForm(): void {
+    this.form.reset(
+      {
+        flowIntensity: 'none',
+        symptoms: [],
+        mood: 'calm',
+        sexualActivity: false,
+        vaginalDischarge: false,
+        notes: '',
+      },
+      { emitEvent: false },
+    );
   }
 
   private formatDate(dateKey: string): string {

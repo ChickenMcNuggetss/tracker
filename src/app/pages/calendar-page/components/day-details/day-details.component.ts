@@ -56,6 +56,11 @@ export class DayDetailsComponent {
     return entry ? entry.symptoms.map((symptom) => SYMPTOM_LABELS[symptom]) : [];
   });
 
+  readonly notes = computed(() => {
+    const entry = this.entry();
+    return entry ? entry.notes : null;
+  });
+
   readonly moodMeterValue = computed(() => {
     const mood = this.entry()?.mood;
 
