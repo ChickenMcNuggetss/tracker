@@ -12,6 +12,8 @@ import { DayDetailsComponent } from '../calendar-page/components/day-details/day
 import { format } from 'date-fns';
 import { LogEntriesService } from '../../core/services/log-entries.service';
 import { fromDateKey } from '../../shared/utils/fromDateKey';
+import { isDateInRange } from '../../shared/utils/isDateInRange';
+import { CyclePrediction } from '../../core/services/cycle-prediction';
 
 @Component({
   selector: 'app-home-page',
@@ -28,6 +30,7 @@ import { fromDateKey } from '../../shared/utils/fromDateKey';
 export class HomePage {
   private readonly cycleSettingsService = inject(CycleSettingsService);
   private readonly logEntriesService = inject(LogEntriesService);
+  private readonly cyclePredictionService = inject(CyclePrediction);
 
   protected selectedDateKey = format(new Date(), 'yyyy-MM-dd');
 
@@ -52,7 +55,7 @@ export class HomePage {
 
   readonly selectedLogEntry = computed(() => {
     const dateKey = this.selectedDateKey;
-    console.warn(dateKey, 'dateKey');
+
     return dateKey ? this.logEntriesService.entryForDate(dateKey) : null;
   });
 
@@ -63,6 +66,15 @@ export class HomePage {
       return;
     }
 
-    this.logEntriesService.openEditLog(dateKey);
+    const isPeriodDay = isDateInRange(
+      dateKey,
+      this.cyclePredictionService.cyclePredictions()?.nextPeriod?.window ?? null,
+    );
+    const isOvulationDay = isDateInRange(
+      dateKey,
+      this.cyclePredictionService.cyclePredictions()?.ovulation?.window ?? null,
+    );
+
+    this.logEntriesService.openEditLog(dateKey, isPeriodDay, isOvulationDay);
   }
 }

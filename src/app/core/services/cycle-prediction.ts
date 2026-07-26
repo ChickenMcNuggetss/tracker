@@ -1,7 +1,7 @@
 import { Service } from '@angular/core';
 import { BehaviorSubject, from } from 'rxjs';
 import { PredictionEngine, type HistoryInput, type PredictionResult } from 'cyclia';
-import { CycleSettingsRecord, db, PeriodPrediction } from '../db/tracker-db';
+import { CyclePredictionType, db } from '../db/tracker-db';
 import { liveQuery } from 'dexie';
 import { toSignal } from '@angular/core/rxjs-interop';
 
@@ -18,7 +18,7 @@ export class CyclePrediction {
   private loadingSubject = new BehaviorSubject<boolean>(false);
 
   readonly cyclePredictions = toSignal(from(liveQuery(() => db.cyclePredictions.get('default'))), {
-    initialValue: undefined as PeriodPrediction | undefined,
+    initialValue: undefined as CyclePredictionType | undefined,
   });
 
   loading$ = this.loadingSubject.asObservable();
@@ -38,8 +38,9 @@ export class CyclePrediction {
         summary: this.engine.analyze(history),
       };
 
-      const newPeriodPrediction: PeriodPrediction = {
-        ...predictions.nextPeriod,
+      const newPeriodPrediction: CyclePredictionType = {
+        nextPeriod: predictions.nextPeriod,
+        ovulation: predictions.ovulation,
         id: 'default',
         updatedAt: new Date().toISOString(),
       };

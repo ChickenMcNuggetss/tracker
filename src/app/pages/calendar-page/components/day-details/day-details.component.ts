@@ -39,6 +39,8 @@ const SYMPTOM_LABELS: Record<SymptomKey, string> = {
 export class DayDetailsComponent {
   readonly dateLabel = input<string>('');
   readonly entry = input<CycleLogRecord | null>(null);
+  readonly isPeriod = input<boolean>(false);
+  readonly isOvulation = input<boolean>(false);
   readonly editRequested = output<void>();
 
   readonly flowLabel = computed(() => {

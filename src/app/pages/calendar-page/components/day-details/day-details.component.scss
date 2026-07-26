@@ -132,6 +132,16 @@
   color: var(--color-text-secondary);
   font-size: var(--font-size-body);
   font-weight: var(--font-weight-semibold);
+
+  &.period-day {
+    background: var(--color-surface-period-end);
+    color: var(--color-period-text);
+  }
+
+  &.ovulation {
+    background: var(--color-ovulation-primary);
+    color: var(--color-ovulation-text);
+  }
 }
 
 .detail-card__body {
@@ -214,3 +224,7 @@
 
   @include mixins.focus-ring;
 }
+
+// .day-tag {
+//   width: 170px;
+// }

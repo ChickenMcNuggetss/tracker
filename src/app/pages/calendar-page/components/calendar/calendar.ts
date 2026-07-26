@@ -9,6 +9,7 @@ import { Button } from '../../../../shared/components/button/button.component';
 import { DayDetailsComponent } from '../day-details/day-details.component';
 import { fromDateKey } from '../../../../shared/utils/fromDateKey';
 import { CyclePrediction } from '../../../../core/services/cycle-prediction';
+import { isDateInRange } from '../../../../shared/utils/isDateInRange';
 
 interface CalendarDay {
   date: Date;
@@ -144,7 +145,6 @@ export class Calendar {
     if (!dateKey) {
       return;
     }
-    console.log(dateKey, 'dateKey on open');
     this.logEntriesService.openEditLog(dateKey);
   }
 
@@ -207,17 +207,7 @@ export class Calendar {
     return `${year}-${month}-${day}`;
   }
 
-  isDateInRange(date: Date | string, range: { start: string; end: string } | null): boolean {
-    if (!range || !range.start || !range.end) {
-      return false;
-    }
-    const target =
-      typeof date === 'string'
-        ? new Date(`${date}T00:00:00`)
-        : new Date(date.getFullYear(), date.getMonth(), date.getDate());
-
-    const start = new Date(`${range.start}T00:00:00`);
-    const end = new Date(`${range.end}T00:00:00`);
-    return !!(target >= start && target <= end);
+  protected isDateInRange(date: Date | string, range: { start: string; end: string } | null): boolean {
+    return isDateInRange(date, range);
   }
 }

@@ -5,7 +5,6 @@
   min-height: 100svh;
 }
 
-
 .calendar-layout {
   position: relative;
   z-index: 1;
@@ -178,10 +177,14 @@
 
 .next-period {
   color: var(--color-accent);
-  background: radial-gradient(
-   var(--color-page-glow-right),
-    var(--color-page-bg-middle) 75%
-  );
+  background: radial-gradient(var(--color-page-glow-right), var(--color-page-bg-middle) 75%);
+  box-shadow: 0;
+}
+
+.ovulation {
+  color: var(--color-ovulation-accent);
+  background: radial-gradient(var(--color-ovulation-primary), var(--color-ovulation-soft) 50%, var(--color-page-bg-middle) 100%);
+  border-color: var(--color-ovulation-primary);
   box-shadow: 0;
 }
 
@@ -266,6 +269,7 @@
   .day-cell {
     min-height: 1rem;
     padding: 0.55rem 0.45rem;
+    border-color: var(--color-border-soft);
   }
 
   .today-label {

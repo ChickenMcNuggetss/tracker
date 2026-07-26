@@ -22,6 +22,8 @@ export interface LogFormValue {
 export interface LogOverlayState {
   mode: 'quick' | 'edit';
   dateKey: string;
+  isPeriod?: boolean;
+  isOvulation?: boolean;
 }
 
 const DEFAULT_FLOW_INTENSITY: FlowIntensity = 'none';
@@ -40,12 +42,8 @@ export class LogEntriesService {
 
   readonly latestEntry = computed(() => this.entries()[0] ?? null);
 
-  openQuickLog(dateKey = this.todayDateKey()): void {
-    this.overlayState.set({ mode: 'quick', dateKey });
-  }
-
-  openEditLog(dateKey: string): void {
-    this.overlayState.set({ mode: 'edit', dateKey });
+  openEditLog(dateKey: string, isPeriod?: boolean, isOvulation?: boolean): void {
+    this.overlayState.set({ mode: 'edit', dateKey, isPeriod, isOvulation });
   }
 
   closeOverlay(): void {

@@ -35,11 +35,16 @@ export interface CycleLogRecord {
   updatedAt: string;
 }
 
-export type PeriodPrediction = PredictionResult & { id: 'default'; updatedAt: string };
+export interface Prediction {
+  nextPeriod: PredictionResult;
+  ovulation: PredictionResult;
+}
+
+export type CyclePredictionType = Prediction & { id: 'default'; updatedAt: string };
 
 const db = new Dexie('TrackerApp') as Dexie & {
   periodDays: EntityTable<PeriodDayRecord, 'dateKey'>;
-  cyclePredictions: EntityTable<PeriodPrediction, 'id'>;
+  cyclePredictions: EntityTable<CyclePredictionType, 'id'>;
   cycleSettings: EntityTable<CycleSettingsRecord, 'id'>;
   logEntries: EntityTable<CycleLogRecord, 'dateKey'>;
 };

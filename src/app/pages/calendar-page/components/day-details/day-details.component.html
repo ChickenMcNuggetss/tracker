@@ -3,6 +3,14 @@
     <div class="day-details-heading">
       <p class="day-details-eyebrow">Day Details</p>
       <h2 id="day-details-title">{{ dateLabel() }}</h2>
+      @if (isPeriod() || isOvulation()) {
+        <div class="day-tag">
+          <p class="detail-pill" [class.period-day]="!!isPeriod()" [class.ovulation]="!!isOvulation()">
+            {{ isPeriod() ? 'expected period day' : '' }}
+            {{ isOvulation() ? 'expected ovulation day' : '' }}
+          </p>
+        </div>
+      }
     </div>
 
     <button type="button" class="day-details-edit" (click)="openEditor()">

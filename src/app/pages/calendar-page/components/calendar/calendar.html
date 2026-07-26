@@ -46,7 +46,12 @@
             [class.today]="day.isToday"
             [attr.aria-pressed]="day.isSelected"
             [attr.aria-label]="day.date | date: 'fullDate'"
-            [class.next-period]="isDateInRange(day.dateKey, cyclePrediction()?.window ?? null)"
+            [class.next-period]="
+              isDateInRange(day.dateKey, cyclePrediction()?.nextPeriod?.window ?? null)
+            "
+            [class.ovulation]="
+              isDateInRange(day.dateKey, cyclePrediction()?.ovulation?.window ?? null)
+            "
             (click)="selectDate(day)"
           >
             <span class="day-number">{{ day.dayNumber }}</span>
@@ -80,6 +85,10 @@
       <app-day-details
         [dateLabel]="selectedDateLabel"
         [entry]="selectedLogEntry()"
+        [isPeriod]="isDateInRange(selectedDateKey() ?? '', cyclePrediction()?.nextPeriod?.window ?? null)"
+        [isOvulation]="
+          isDateInRange(selectedDateKey() ?? '', cyclePrediction()?.ovulation?.window ?? null)
+        "
         (editRequested)="openEditLogs()"
       />
     </div>
