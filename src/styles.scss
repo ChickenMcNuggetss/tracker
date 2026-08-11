@@ -41,3 +41,23 @@ body {
 *::after {
   box-sizing: border-box;
 }
+
+select,
+select option {
+  background: var(--color-surface-card);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-body);
+}
+
+select:hover,
+select:focus {
+  border-color: var(--color-accent);
+}
+
+select option:checked {
+  background: var(--color-surface-muted);
+}
+
+select option:disabled {
+  color: var(--color-text-muted);
+}

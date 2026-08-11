@@ -27,10 +27,5 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/profile-page/profile-page').then((c) => c.ProfilePage),
     canActivate: [requireCycleSettingsGuard],
   },
-  // {
-  //   path: '',
-  //   component: AppShell,
-  //   canActivate: [requireCycleSettingsGuard],
-  //   children: [{ path: '', redirectTo: 'home', pathMatch: 'full' }],
-  // },
+  { path: '', redirectTo: 'home', pathMatch: 'full' }
 ];

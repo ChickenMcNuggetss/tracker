@@ -1,44 +1,28 @@
 <main class="onboarding-page">
   <section class="onboarding-card" aria-labelledby="onboarding-title">
-    <p class="onboarding-eyebrow">Welcome</p>
-    <h1 id="onboarding-title">Let's set up your cycle</h1>
-    <p class="onboarding-copy">Answer these two questions to personalize your dashboard.</p>
+    <p class="onboarding-eyebrow">{{ 'OnboardingWelcome' | translate }}</p>
+    <h1 id="onboarding-title">{{ 'OnboardingTitle' | translate }}</h1>
+    <p class="onboarding-copy">{{ 'OnboardingCopy' | translate }}</p>
 
     <form class="onboarding-form" [formGroup]="form" (ngSubmit)="save()">
       <label class="field">
-        <span class="field-label">What is your average cycle length?</span>
-        <input
-          type="number"
-          min="1"
-          step="1"
-          inputmode="numeric"
-          formControlName="cycleLength"
-        />
+        <span class="field-label">{{ 'OnboardingCycleLengthQuestion' | translate }}</span>
+        <input type="number" min="1" step="1" inputmode="numeric" formControlName="cycleLength" />
         @if (form.controls.cycleLength.touched && form.controls.cycleLength.invalid) {
-          <span class="field-error">Enter a whole number greater than zero.</span>
+          <span class="field-error">{{ 'OnboardingCycleLengthError' | translate }}</span>
         }
       </label>
 
       <label class="field">
-        <span class="field-label">What is your average period length?</span>
-        <input
-          type="number"
-          min="1"
-          step="1"
-          inputmode="numeric"
-          formControlName="periodLength"
-        />
+        <span class="field-label">{{ 'OnboardingPeriodLengthQuestion' | translate }}</span>
+        <input type="number" min="1" step="1" inputmode="numeric" formControlName="periodLength" />
         @if (form.controls.periodLength.touched && form.controls.periodLength.invalid) {
-          <span class="field-error">Enter a whole number greater than zero.</span>
+          <span class="field-error">{{ 'OnboardingPeriodLengthError' | translate }}</span>
         }
       </label>
 
-      <button
-        type="submit"
-        class="save-button"
-        [disabled]="form.invalid || isSaving()"
-      >
-        Continue
+      <button type="submit" class="save-button" [disabled]="form.invalid || isSaving()">
+        {{ 'OnboardingContinue' | translate }}
       </button>
     </form>
   </section>

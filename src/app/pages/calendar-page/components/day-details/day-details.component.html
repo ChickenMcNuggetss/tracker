@@ -1,20 +1,24 @@
 <section class="day-details-card" aria-labelledby="day-details-title">
   <header class="day-details-header">
     <div class="day-details-heading">
-      <p class="day-details-eyebrow">Day Details</p>
+      <p class="day-details-eyebrow">{{ 'DayDetails' | translate }}</p>
       <h2 id="day-details-title">{{ dateLabel() }}</h2>
       @if (isPeriod() || isOvulation()) {
         <div class="day-tag">
-          <p class="detail-pill" [class.period-day]="!!isPeriod()" [class.ovulation]="!!isOvulation()">
-            {{ isPeriod() ? 'expected period day' : '' }}
-            {{ isOvulation() ? 'expected ovulation day' : '' }}
+          <p
+            class="detail-pill"
+            [class.period-day]="!!isPeriod()"
+            [class.ovulation]="!!isOvulation()"
+          >
+            {{ isPeriod() ? ('DayDetailsPeriodDay' | translate) : '' }}
+            {{ isOvulation() ? ('DayDetailsOvulationDay' | translate) : '' }}
           </p>
         </div>
       }
     </div>
 
     <button type="button" class="day-details-edit" (click)="openEditor()">
-      Edit Logs <span aria-hidden="true">✎</span>
+      {{ 'DayDetailsEditLogs' | translate }} <span aria-hidden="true">✎</span>
     </button>
   </header>
 
@@ -22,13 +26,13 @@
     <div class="day-details-grid">
       <article class="detail-card detail-card--flow">
         <div class="detail-card__badge" aria-hidden="true">☂</div>
-        <p class="detail-card__label">Flow intensity</p>
+        <p class="detail-card__label">{{ 'DayDetailsFlowIntensity' | translate }}</p>
         <p class="detail-card__value">{{ flowLabel() }}</p>
       </article>
 
       <article class="detail-card detail-card--symptoms">
         <div class="detail-card__badge" aria-hidden="true">✚</div>
-        <p class="detail-card__label">Symptoms</p>
+        <p class="detail-card__label">{{ 'DayDetailsSymptoms' | translate }}</p>
 
         @if (symptoms().length) {
           <div class="detail-pill-list">
@@ -37,7 +41,7 @@
             }
           </div>
         } @else {
-          <p class="detail-card__empty">No symptoms logged.</p>
+          <p class="detail-card__empty">{{ 'DayDetailsNoSymptoms' | translate }}</p>
         }
       </article>
 
@@ -47,7 +51,7 @@
         </div>
 
         <div class="detail-card__body">
-          <p class="detail-card__label">Mood</p>
+          <p class="detail-card__label">{{ 'DayDetailsMood' | translate }}</p>
           <p class="detail-card__value detail-card__value--wrap">
             {{ mood()?.label ?? 'No mood logged' }}
           </p>
@@ -56,7 +60,7 @@
 
       <article class="detail-card">
         <div class="detail-card__body">
-          <p class="detail-card__label">Notes</p>
+          <p class="detail-card__label">{{ 'DayDetailsNotes' | translate }}</p>
           <textarea
             class="detail-card__value"
             [disabled]="true"
@@ -69,8 +73,8 @@
     </div>
   } @else {
     <div class="day-details-empty">
-      <p>No log saved for this day yet.</p>
-      <p>Use Edit Logs to capture flow, symptoms, and mood.</p>
+      <p>{{ 'DayDetailsNoLog' | translate }}</p>
+      <p>{{ 'DayDetailsEditLogsInstructions' | translate }}</p>
     </div>
   }
 </section>

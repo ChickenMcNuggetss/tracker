@@ -2,12 +2,13 @@ import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/cor
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CycleSettingsService } from '../../../../core/services/cycle-settings.service';
+import { TranslatePipe } from '@ngx-translate/core';
 
 const POSITIVE_INTEGER_PATTERN = /^[1-9]\d*$/;
 
 @Component({
   selector: 'app-onboarding',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, TranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './onboarding.html',
   styleUrl: './onboarding.scss',

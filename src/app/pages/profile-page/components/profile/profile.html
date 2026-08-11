@@ -1,12 +1,14 @@
 <main class="profile-page">
   <section class="profile-card" aria-labelledby="profile-title">
-    <p class="profile-eyebrow">Profile</p>
-    <h1 id="profile-title">Cycle settings</h1>
-    <p class="profile-copy">Set your cycle length and period length to keep the dashboard current.</p>
+    <p class="profile-eyebrow">{{ 'Profile' | translate }}</p>
+    <h1 id="profile-title">{{ 'CycleSettings' | translate }}</h1>
+    <p class="profile-copy">
+      {{ 'CycleSettingsDescription' | translate }}
+    </p>
 
     <form class="profile-form" [formGroup]="form" (ngSubmit)="save()">
       <label class="field">
-        <span class="field-label">Cycle length</span>
+        <span class="field-label">{{ 'CycleLength' | translate }}</span>
         <input
           type="number"
           min="1"
@@ -15,14 +17,14 @@
           formControlName="cycleLength"
           aria-describedby="cycleLength-help"
         />
-        <span id="cycleLength-help" class="field-help">Whole number of days in your cycle.</span>
+        <span id="cycleLength-help" class="field-help">{{ 'CycleLengthHelp' | translate }}</span>
         @if (form.controls.cycleLength.touched && form.controls.cycleLength.invalid) {
-          <span class="field-error">Enter a whole number greater than zero.</span>
+          <span class="field-error">{{ 'PeriodLengthError' | translate }}</span>
         }
       </label>
 
       <label class="field">
-        <span class="field-label">Period length</span>
+        <span class="field-label">{{ 'PeriodLength' | translate }}</span>
         <input
           type="number"
           min="1"
@@ -31,19 +33,27 @@
           formControlName="periodLength"
           aria-describedby="periodLength-help"
         />
-        <span id="periodLength-help" class="field-help">Whole number of days you expect your period to last.</span>
+        <span id="periodLength-help" class="field-help">{{ 'PeriodLengthHelp' | translate }}</span>
         @if (form.controls.periodLength.touched && form.controls.periodLength.invalid) {
-          <span class="field-error">Enter a whole number greater than zero.</span>
+          <span class="field-error">{{ 'PeriodLengthError' | translate }}</span>
         }
       </label>
 
-      <button
-        type="submit"
-        class="save-button"
-        [disabled]="form.invalid || isSaving()"
-      >
-        Save settings
+      <button type="submit" class="save-button" [disabled]="form.invalid || isSaving()">
+        {{ 'SaveSettings' | translate }}
       </button>
     </form>
+
+    <div>
+      <h1 id="language-title">{{ 'LanguageSettings' | translate }}</h1>
+      <app-select
+        label="{{ 'Language' | translate }}"
+        (valueChange)="switchLanguage($event)"
+        [value]="selectedLanguage() ?? ''"
+      >
+        <app-select-option value="en" label="{{ 'English' | translate }}" />
+        <app-select-option value="ru" label="{{ 'Russian' | translate }}" />
+      </app-select>
+    </div>
   </section>
 </main>

@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { CycleLogRecord, FlowIntensity, MoodKey, SymptomKey } from '../../../../core/db/tracker-db';
+import { TranslatePipe } from '@ngx-translate/core';
 
 interface DetailOption {
   readonly label: string;
@@ -32,6 +33,7 @@ const SYMPTOM_LABELS: Record<SymptomKey, string> = {
 
 @Component({
   selector: 'app-day-details',
+  imports: [TranslatePipe],
   templateUrl: './day-details.component.html',
   styleUrl: './day-details.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

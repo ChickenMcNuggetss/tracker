@@ -91,7 +91,7 @@
                   [class.is-on]="$any(form).controls.sexualActivity.value"
                   (click)="toggleSignal('sexualActivity')"
                 >
-                  <span class="signal-row__label">Sexual Activity</span>
+                  <span class="signal-row__label">{{"SexualActivity" | translate}}</span>
                   <span class="signal-switch" aria-hidden="true"></span>
                 </button>
 
@@ -101,7 +101,7 @@
                   [class.is-on]="$any(form).controls.vaginalDischarge.value"
                   (click)="toggleSignal('vaginalDischarge')"
                 >
-                  <span class="signal-row__label">Vaginal Discharge</span>
+                  <span class="signal-row__label">{{"VaginalDischarge" | translate}}</span>
                   <span class="signal-switch" aria-hidden="true"></span>
                 </button>
               </div>

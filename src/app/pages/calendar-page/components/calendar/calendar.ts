@@ -10,6 +10,7 @@ import { DayDetailsComponent } from '../day-details/day-details.component';
 import { fromDateKey } from '../../../../shared/utils/fromDateKey';
 import { CyclePrediction } from '../../../../core/services/cycle-prediction';
 import { isDateInRange } from '../../../../shared/utils/isDateInRange';
+import { TranslatePipe } from '@ngx-translate/core';
 
 interface CalendarDay {
   date: Date;
@@ -23,7 +24,7 @@ interface CalendarDay {
 
 @Component({
   selector: 'app-calendar',
-  imports: [CommonModule, Button, DayDetailsComponent],
+  imports: [CommonModule, Button, DayDetailsComponent, TranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './calendar.html',
   styleUrl: './calendar.scss',

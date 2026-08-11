@@ -10,6 +10,7 @@ import {
 import { ReactiveFormsModule, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { FlowIntensity, MoodKey, SymptomKey } from '../../../core/db/tracker-db';
 import { LogEntriesService } from '../../../core/services/log-entries.service';
+import { TranslatePipe } from '@ngx-translate/core';
 
 interface FlowOption {
   value: FlowIntensity;
@@ -62,7 +63,7 @@ const SYMPTOM_OPTIONS: SymptomOption[] = [
 
 @Component({
   selector: 'app-log-overlay',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, TranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './log-overlay.component.html',
   styleUrl: './log-overlay.component.scss',

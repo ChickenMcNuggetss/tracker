@@ -19,7 +19,6 @@ interface NavItem {
 })
 export class AppNavigation {
   breakpointObserver = inject(BreakpointObserver);
-
   readonly navItems: NavItem[] = [
     {
       label: 'Dashboard',

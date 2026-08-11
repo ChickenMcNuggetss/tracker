@@ -19,7 +19,7 @@
       </button>
 
       <div class="month-heading">
-        <p class="month-caption">Current view</p>
+        <p class="month-caption">{{ 'CalendarCurrentView' | translate }}</p>
         <h2>{{ monthLabel }}</h2>
       </div>
 
@@ -56,7 +56,7 @@
           >
             <span class="day-number">{{ day.dayNumber }}</span>
             @if (day.isToday) {
-              <span class="today-label">Today</span>
+              <span class="today-label">{{ 'CalendarToday' | translate }}</span>
             }
             @if (day.isPeriodDay) {
               <span class="period-indicator" aria-hidden="true"></span>
@@ -65,12 +65,12 @@
         }
       </div>
     } @else {
-      <p class="empty-state">Loading calendar...</p>
+      <p class="empty-state">{{ 'CalendarLoading' | translate }}</p>
     }
 
     <div class="selection-panel">
       <div class="selection-copy">
-        <p class="selection-label">Selected date</p>
+        <p class="selection-label">{{ 'CalendarSelectedDate' | translate }}</p>
         <p class="selection-value">{{ selectedDateLabel }}</p>
       </div>
 

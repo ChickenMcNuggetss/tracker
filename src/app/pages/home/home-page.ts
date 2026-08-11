@@ -14,6 +14,7 @@ import { LogEntriesService } from '../../core/services/log-entries.service';
 import { fromDateKey } from '../../shared/utils/fromDateKey';
 import { isDateInRange } from '../../shared/utils/isDateInRange';
 import { CyclePrediction } from '../../core/services/cycle-prediction';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-home-page',
@@ -22,6 +23,7 @@ import { CyclePrediction } from '../../core/services/cycle-prediction';
     DaysUntilNextPeriodCardComponent,
     LogOverlayComponent,
     DayDetailsComponent,
+    TranslatePipe,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './home-page.html',
