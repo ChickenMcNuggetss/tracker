@@ -40,6 +40,12 @@ export interface Prediction {
   ovulation: PredictionResult;
 }
 
+export interface ProfileSettingsType {
+  id: 'default';
+  language: string;
+  updatedAt: string;
+}
+
 export type CyclePredictionType = Prediction & { id: 'default'; updatedAt: string };
 
 const db = new Dexie('TrackerApp') as Dexie & {
@@ -47,6 +53,7 @@ const db = new Dexie('TrackerApp') as Dexie & {
   cyclePredictions: EntityTable<CyclePredictionType, 'id'>;
   cycleSettings: EntityTable<CycleSettingsRecord, 'id'>;
   logEntries: EntityTable<CycleLogRecord, 'dateKey'>;
+  profileSettings: EntityTable<ProfileSettingsType, 'id'>;
 };
 
 db.version(TRACKER_DB_VERSION + 1).stores({
@@ -54,6 +61,7 @@ db.version(TRACKER_DB_VERSION + 1).stores({
   cyclePredictions: 'id, updatedAt',
   cycleSettings: 'id, updatedAt',
   logEntries: 'dateKey, updatedAt',
+  profileSettings: 'id, updatedAt',
 });
 
 export { db };
