@@ -14,7 +14,7 @@ import { LogEntriesService } from '../../core/services/log-entries.service';
 import { fromDateKey } from '../../shared/utils/fromDateKey';
 import { isDateInRange } from '../../shared/utils/isDateInRange';
 import { CyclePrediction } from '../../core/services/cycle-prediction';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-home-page',
@@ -33,18 +33,9 @@ export class HomePage {
   private readonly cycleSettingsService = inject(CycleSettingsService);
   private readonly logEntriesService = inject(LogEntriesService);
   private readonly cyclePredictionService = inject(CyclePrediction);
+  private readonly translate = inject(TranslateService);
 
   protected selectedDateKey = format(new Date(), 'yyyy-MM-dd');
-
-  private readonly dateFormatter = new Intl.DateTimeFormat('en-US', {
-    weekday: 'long',
-    month: 'long',
-    day: 'numeric',
-  });
-
-  get formattedSelectedDateKey() {
-    return this.dateFormatter.format(fromDateKey(this.selectedDateKey));
-  }
 
   readonly periodDays = toSignal(
     from(liveQuery(() => db.periodDays.orderBy('dateKey').toArray())),

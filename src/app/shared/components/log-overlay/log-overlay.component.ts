@@ -10,7 +10,8 @@ import {
 import { ReactiveFormsModule, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { FlowIntensity, MoodKey, SymptomKey } from '../../../core/db/tracker-db';
 import { LogEntriesService } from '../../../core/services/log-entries.service';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { fromDateKey } from '../../utils/fromDateKey';
 
 interface FlowOption {
   value: FlowIntensity;
@@ -76,6 +77,7 @@ export class LogOverlayComponent {
   private readonly fb = inject(FormBuilder);
   private readonly document = inject(DOCUMENT);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly translate = inject(TranslateService);
 
   readonly flowOptions = FLOW_OPTIONS;
   readonly moodOptions = MOOD_OPTIONS;
@@ -84,7 +86,7 @@ export class LogOverlayComponent {
   readonly overlayState = this.logEntriesService.overlayState;
 
   readonly title = computed(() =>
-    this.overlayState()?.mode === 'edit' ? 'Edit Logs' : 'Quick Log',
+    this.overlayState()?.mode === 'edit' ? 'EditLogs' : 'Quick Log',
   );
 
   readonly subtitle = computed(() => {
@@ -95,8 +97,8 @@ export class LogOverlayComponent {
     }
 
     return state.mode === 'edit'
-      ? 'Update the log for this day.'
-      : 'Capture how today feels at a glance.';
+      ? 'UpdateTheLogForThisDay'
+      : 'CaptureHowTodayFeelsAtAGlance';
   });
 
   readonly dateLabel = computed(() => {
@@ -105,8 +107,12 @@ export class LogOverlayComponent {
     if (!state) {
       return '';
     }
-
-    return this.formatDate(state.dateKey);
+    const locale = this.translate.currentLang() || 'en-US';
+    return new Intl.DateTimeFormat(locale, {
+      weekday: 'long',
+      month: 'long',
+      day: 'numeric',
+    }).format(fromDateKey(state.dateKey));
   });
 
   readonly entryLog = computed(() => {

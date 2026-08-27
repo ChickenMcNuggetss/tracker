@@ -30,7 +30,7 @@
 
     <div class="weekday-row" aria-hidden="true">
       @for (weekDay of weekDays; track weekDay) {
-        <span>{{ weekDay }}</span>
+        <span>{{ weekDay | translate }}</span>
       }
     </div>
 
@@ -75,7 +75,7 @@
       </div>
 
       <app-button [disabled]="!selectedDateKey()" (click)="toggleSelectedPeriodDay()">
-        {{ toggleLabel }}
+        {{ toggleLabel | translate}}
       </app-button>
     </div>
   </section>
@@ -83,7 +83,7 @@
   @if (selectedDateKey()) {
     <div class="calendar-details">
       <app-day-details
-        [dateLabel]="selectedDateLabel"
+        [dateKey]="selectedDateKey() ?? ''"
         [entry]="selectedLogEntry()"
         [isPeriod]="isDateInRange(selectedDateKey() ?? '', cyclePrediction()?.nextPeriod?.window ?? null)"
         [isOvulation]="

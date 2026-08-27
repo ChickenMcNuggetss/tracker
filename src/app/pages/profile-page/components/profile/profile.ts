@@ -1,9 +1,10 @@
-import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CycleSettingsService } from '../../../../core/services/cycle-settings.service';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { SelectComponent } from '../../../../shared/components/select/select.component';
 import { SelectOption } from "../../../../shared/components/select-option/select-option";
+import { ProfileSettings } from '../../../../core/services/profile-settings';
 
 const POSITIVE_INTEGER_PATTERN = /^[1-9]\d*$/;
 
@@ -18,9 +19,10 @@ export class ProfileComponent {
   private readonly cycleSettingsService = inject(CycleSettingsService);
   private readonly fb = inject(FormBuilder);
   translationService = inject(TranslateService);
+  private readonly profileSettingsService = inject(ProfileSettings);
 
   readonly isSaving = signal(false);
-  readonly selectedLanguage = this.translationService.currentLang;
+  readonly selectedLanguage = computed(() => this.profileSettingsService.entry()?.language ?? this.translationService.currentLang());
 
   readonly form = this.fb.group({
     cycleLength: this.fb.nonNullable.control('', {
@@ -66,5 +68,7 @@ export class ProfileComponent {
 
   switchLanguage(lang: string) {
     this.translationService.use(lang);
+    console.log('Language switched to:', lang);
+    this.profileSettingsService.saveProfileSettings(lang);
   }
 }

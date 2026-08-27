@@ -15,14 +15,14 @@
       >
         <header class="overlay-header">
           <div class="overlay-heading">
-            <p class="overlay-eyebrow">{{ 'Day details' }}</p>
-            <h2 id="log-overlay-title">{{ title() }}</h2>
-            <p class="overlay-copy">{{ subtitle() }}</p>
+            <p class="overlay-eyebrow">{{ 'DayDetails' | translate }}</p>
+            <h2 id="log-overlay-title">{{ title() | translate }}</h2>
+            <p class="overlay-copy">{{ subtitle() | translate }}</p>
           </div>
 
           <div class="overlay-meta">
-            <p class="overlay-date">{{ dateLabel() }}</p>
-            <button type="button" class="overlay-close" (click)="close()" aria-label="Close dialog">
+            <p class="overlay-date">{{ dateLabel() | translate }}</p>
+            <button type="button" class="overlay-close" (click)="close()" aria-label="{{ 'CloseDialog' | translate }}">
               ×
             </button>
           </div>
@@ -31,8 +31,8 @@
         @if (form) {
           <form class="log-form" [formGroup]="form">
             <section class="log-section">
-              <p class="log-section__label">Flow intensity</p>
-              <div class="segmented-control" role="radiogroup" aria-label="Flow intensity">
+              <p class="log-section__label">{{ 'FlowIntensity' | translate}}</p>
+              <div class="segmented-control" role="radiogroup" aria-label="{{ 'FlowIntensity' | translate}}">
                 @for (option of flowOptions; track option.value) {
                   <button
                     type="button"
@@ -41,14 +41,14 @@
                     [attr.aria-pressed]="$any(form).controls.flowIntensity.value === option.value"
                     (click)="setFlowIntensity(option.value)"
                   >
-                    {{ option.label }}
+                    {{ option.label | translate }}
                   </button>
                 }
               </div>
             </section>
 
             <section class="log-section">
-              <p class="log-section__label">Symptoms</p>
+              <p class="log-section__label">{{ 'Symptoms' | translate }}</p>
               <div class="symptoms-grid">
                 @for (option of symptomOptions; track option.value) {
                   <button
@@ -58,15 +58,15 @@
                     [attr.aria-pressed]="isSymptomSelected(option.value)"
                     (click)="toggleSymptom(option.value)"
                   >
-                    {{ option.label }}
+                    {{ option.label | translate }}
                   </button>
                 }
               </div>
             </section>
 
             <section class="log-section">
-              <p class="log-section__label">Daily mood</p>
-              <div class="mood-grid" role="radiogroup" aria-label="Daily mood">
+              <p class="log-section__label">{{ 'DailyMood' | translate }}</p>
+              <div class="mood-grid" role="radiogroup" aria-label="{{ 'DailyMood' | translate }}">
                 @for (option of moodOptions; track option.value) {
                   <button
                     type="button"
@@ -76,14 +76,14 @@
                     (click)="setMood(option.value)"
                   >
                     <span class="mood-option__icon" aria-hidden="true">{{ option.icon }}</span>
-                    <span class="mood-option__label">{{ option.label }}</span>
+                    <span class="mood-option__label">{{ option.label | translate }}</span>
                   </button>
                 }
               </div>
             </section>
 
             <section class="log-section">
-              <p class="log-section__label">Body signals</p>
+              <p class="log-section__label">{{ 'BodySignals' | translate }}</p>
               <div class="signal-list">
                 <button
                   type="button"
@@ -91,7 +91,7 @@
                   [class.is-on]="$any(form).controls.sexualActivity.value"
                   (click)="toggleSignal('sexualActivity')"
                 >
-                  <span class="signal-row__label">{{"SexualActivity" | translate}}</span>
+                  <span class="signal-row__label">{{ 'SexualActivity' | translate }}</span>
                   <span class="signal-switch" aria-hidden="true"></span>
                 </button>
 
@@ -101,31 +101,33 @@
                   [class.is-on]="$any(form).controls.vaginalDischarge.value"
                   (click)="toggleSignal('vaginalDischarge')"
                 >
-                  <span class="signal-row__label">{{"VaginalDischarge" | translate}}</span>
+                  <span class="signal-row__label">{{ 'VaginalDischarge' | translate }}</span>
                   <span class="signal-switch" aria-hidden="true"></span>
                 </button>
               </div>
             </section>
 
             <section class="log-section">
-              <p class="log-section__label">Daily notes</p>
+              <p class="log-section__label">{{ 'DailyNotes' | translate }}</p>
               <textarea
                 class="notes-field"
                 rows="5"
-                placeholder="How are you feeling today?"
+                placeholder="{{ 'DailyNotesPlaceholder' | translate }}"
                 formControlName="notes"
               ></textarea>
             </section>
 
             <footer class="overlay-actions">
-              <button type="button" class="secondary-button" (click)="close()">Cancel</button>
+              <button type="button" class="secondary-button" (click)="close()">
+                {{ 'Cancel' | translate }}
+              </button>
               <button
                 type="button"
                 class="primary-button"
                 [disabled]="$any(form).invalid"
                 (click)="save()"
               >
-                Save log
+                {{ 'SaveLog' | translate }}
               </button>
             </footer>
           </form>

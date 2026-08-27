@@ -1,8 +1,8 @@
 <div class="dashboard-page">
   <header class="dashboard-hero">
     <p class="dashboard-eyebrow">{{ 'HomeDashboard' | translate }}</p>
-    <h1>{{ 'HomeTitle' | translate }}</h1>
-    <p class="dashboard-copy">{{ 'HomeCopy' | translate }}</p>
+    <!-- <h1>{{ 'HomeTitle' | translate }}</h1> -->
+    <!-- <p class="dashboard-copy">{{ 'HomeCopy' | translate }}</p> -->
   </header>
 
   <section class="dashboard-grid" aria-label="Cycle overview">
@@ -20,7 +20,7 @@
   <section class="dashboard-logs" aria-label="Quick log">
     <div class="calendar-details">
       <app-day-details
-        [dateLabel]="formattedSelectedDateKey"
+        [dateKey]="selectedDateKey"
         [entry]="selectedLogEntry()"
         (editRequested)="openEditLogs()"
       />

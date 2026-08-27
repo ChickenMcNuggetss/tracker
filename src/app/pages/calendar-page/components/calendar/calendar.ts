@@ -1,5 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { liveQuery } from 'dexie';
 import { from, tap } from 'rxjs';
@@ -10,7 +17,7 @@ import { DayDetailsComponent } from '../day-details/day-details.component';
 import { fromDateKey } from '../../../../shared/utils/fromDateKey';
 import { CyclePrediction } from '../../../../core/services/cycle-prediction';
 import { isDateInRange } from '../../../../shared/utils/isDateInRange';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 interface CalendarDay {
   date: Date;
@@ -32,23 +39,13 @@ interface CalendarDay {
 export class Calendar {
   private readonly logEntriesService = inject(LogEntriesService);
   private readonly cyclePredictionService = inject(CyclePrediction);
+  private readonly translate = inject(TranslateService);
 
   readonly weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
   displayedMonth = signal(this.startOfMonth(new Date()));
   selectedDateKey = signal<string | null>(null);
   periodDates: string[] = [];
-
-  private readonly monthFormatter = new Intl.DateTimeFormat('en-US', {
-    month: 'long',
-    year: 'numeric',
-  });
-
-  private readonly dateFormatter = new Intl.DateTimeFormat('en-US', {
-    weekday: 'long',
-    month: 'long',
-    day: 'numeric',
-  });
 
   initialDays: PeriodDayRecord[] = [];
 
@@ -80,25 +77,31 @@ export class Calendar {
   }
 
   get monthLabel(): string {
-    return this.monthFormatter.format(this.displayedMonth());
+    const locale = this.translate.currentLang() || 'en-US';
+    return new Intl.DateTimeFormat(locale, { month: 'long', year: 'numeric' }).format(
+      this.displayedMonth(),
+    );
   }
 
   get selectedDateLabel(): string {
     if (!this.selectedDateKey()) {
-      return 'Select a date to mark it as a period day.';
+      return this.translate.instant('SelectDateToMarkAsPeriodDay');
     }
 
-    return this.dateFormatter.format(fromDateKey(this.selectedDateKey()!));
+    const locale = this.translate.currentLang() || 'en-US';
+    return new Intl.DateTimeFormat(locale, {
+      weekday: 'long',
+      month: 'long',
+      day: 'numeric',
+    }).format(fromDateKey(this.selectedDateKey()!));
   }
 
   get toggleLabel(): string {
-    if (!this.selectedDateKey) {
-      return 'Choose a day';
+    if (!this.selectedDateKey()) {
+      return 'ChooseADay';
     }
 
-    return this.isPeriodDay(this.selectedDateKey() ?? '')
-      ? 'Remove period day'
-      : 'Mark as period day';
+    return this.isPeriodDay(this.selectedDateKey() ?? '') ? 'RemovePeriodDay' : 'MarkAsPeriodDay';
   }
 
   buildCalendarDays(): CalendarDay[] {
@@ -165,20 +168,7 @@ export class Calendar {
         from(this.addNewList(selectedDate!))
           .pipe(
             tap(() => {
-              const periodDays = this.periodDays()
-                .filter((date, index, arr) => {
-                  if (index === 0) return true;
-
-                  const prev = arr[index - 1];
-
-                  return date.year !== prev.year || date.month !== prev.month;
-                })
-                .map((record) => {
-                  return {
-                    date: record.dateKey,
-                  };
-                });
-              this.cyclePredictionService.calculatePredictions({ periodStarts: periodDays });
+              this.calculatePredictions();
             }),
           )
           .subscribe();
@@ -187,6 +177,23 @@ export class Calendar {
         this.periodDates = [...this.periodDates, this.selectedDateKey()!];
       }
     }
+  }
+
+  private calculatePredictions(): void {
+    const periodDays = this.periodDays()
+      .filter((date, index, arr) => {
+        if (index === 0) return true;
+
+        const prev = arr[index - 1];
+
+        return date.year !== prev.year || date.month !== prev.month;
+      })
+      .map((record) => {
+        return {
+          date: record.dateKey,
+        };
+      });
+    this.cyclePredictionService.calculatePredictions({ periodStarts: periodDays });
   }
 
   private isPeriodDay(dateKey: string) {
@@ -208,7 +215,10 @@ export class Calendar {
     return `${year}-${month}-${day}`;
   }
 
-  protected isDateInRange(date: Date | string, range: { start: string; end: string } | null): boolean {
+  protected isDateInRange(
+    date: Date | string,
+    range: { start: string; end: string } | null,
+  ): boolean {
     return isDateInRange(date, range);
   }
 }
