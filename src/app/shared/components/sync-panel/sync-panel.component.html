@@ -1,0 +1,74 @@
+<section class="sync-panel" aria-labelledby="sync-panel-title">
+  <div class="sync-panel__header">
+    <p class="sync-panel__eyebrow">PeerJS sync</p>
+    <h2 id="sync-panel-title">Connect devices</h2>
+    <p class="sync-panel__copy">
+      Keep this tab open on both devices, then enter the remote Peer ID to establish a direct
+      sync session.
+    </p>
+  </div>
+
+  <div class="sync-panel__grid">
+    <div class="sync-panel__card">
+      <span class="sync-panel__label">Your Peer ID</span>
+      <code class="sync-panel__peer-id">{{ peerId() }}</code>
+      <p class="sync-panel__meta">Status: {{ statusLabel() }}</p>
+    </div>
+
+    <div class="sync-panel__card">
+      <span class="sync-panel__label">Connected peer</span>
+      <p class="sync-panel__value">{{ connectedPeerId() ?? 'Not connected' }}</p>
+      <p class="sync-panel__meta">Pending changes: {{ pendingChanges() }}</p>
+    </div>
+
+    <div class="sync-panel__card">
+      <span class="sync-panel__label">Last synced</span>
+      <p class="sync-panel__value">{{ formatTimestamp(lastSyncedAt()) }}</p>
+      <p class="sync-panel__meta">Protocol version: 1</p>
+    </div>
+  </div>
+
+  <form class="sync-panel__form" [formGroup]="form" (ngSubmit)="connect()">
+    <label class="sync-panel__field">
+      <span class="sync-panel__label">Remote Peer ID</span>
+      <input
+        formControlName="peerId"
+        type="text"
+        inputmode="text"
+        autocomplete="off"
+        spellcheck="false"
+        placeholder="peer-id"
+      />
+    </label>
+
+    @if (form.controls.peerId.touched && form.controls.peerId.invalid) {
+      <p class="sync-panel__error">Enter a valid Peer ID using letters, numbers, dot, dash, or underscore.</p>
+    }
+
+    <div class="sync-panel__actions">
+      <button type="submit" class="sync-panel__button sync-panel__button--primary">Connect</button>
+      <button type="button" class="sync-panel__button" (click)="disconnect()">Disconnect</button>
+      <button type="button" class="sync-panel__button" (click)="syncNow()">Sync now</button>
+    </div>
+  </form>
+
+  @if (pendingConnection()) {
+    <div class="sync-panel__approval" role="status" aria-live="polite">
+      <p>
+        Incoming connection from <strong>{{ pendingConnection()?.peerId }}</strong>
+      </p>
+      <div class="sync-panel__actions">
+        <button type="button" class="sync-panel__button sync-panel__button--primary" (click)="acceptIncomingConnection()">
+          Accept
+        </button>
+        <button type="button" class="sync-panel__button" (click)="rejectIncomingConnection()">
+          Reject
+        </button>
+      </div>
+    </div>
+  }
+
+  @if (error()) {
+    <p class="sync-panel__error" role="alert">{{ error() }}</p>
+  }
+</section>

@@ -18,6 +18,7 @@ import { fromDateKey } from '../../../../shared/utils/fromDateKey';
 import { CyclePrediction } from '../../../../core/services/cycle-prediction';
 import { isDateInRange } from '../../../../shared/utils/isDateInRange';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { SyncStorageService } from '../../../../core/sync/sync-storage.service';
 
 interface CalendarDay {
   date: Date;
@@ -40,6 +41,7 @@ export class Calendar {
   private readonly logEntriesService = inject(LogEntriesService);
   private readonly cyclePredictionService = inject(CyclePrediction);
   private readonly translate = inject(TranslateService);
+  private readonly syncStorage = inject(SyncStorageService);
 
   readonly weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
@@ -63,7 +65,7 @@ export class Calendar {
   cyclePrediction = computed(() => this.cyclePredictionService.cyclePredictions());
 
   async addNewList(day: CalendarDay) {
-    await db.periodDays.add({
+    await this.syncStorage.recordLocalUpsert('periodDay', {
       dateKey: day.dateKey,
       year: day.date.getFullYear(),
       month: day.date.getMonth(),
@@ -73,7 +75,7 @@ export class Calendar {
   }
 
   async deletePeriodDay(dateKey: string) {
-    await db.periodDays.delete(dateKey);
+    await this.syncStorage.recordLocalDelete('periodDay', dateKey);
   }
 
   get monthLabel(): string {

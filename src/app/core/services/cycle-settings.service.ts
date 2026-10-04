@@ -1,8 +1,9 @@
-import { Injectable, Service, computed } from '@angular/core';
+import { Service, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { liveQuery } from 'dexie';
 import { from } from 'rxjs';
 import { db, type CycleSettingsRecord } from '../db/tracker-db';
+import { SyncStorageService } from '../sync/sync-storage.service';
 
 export interface CycleSettingsValue {
   cycleLength: number;
@@ -14,6 +15,8 @@ const DEFAULT_PERIOD_LENGTH = 5;
 
 @Service()
 export class CycleSettingsService {
+  private readonly syncStorage = inject(SyncStorageService);
+
   readonly cycleSettings = toSignal(
     from(liveQuery(() => db.cycleSettings.get('default'))),
     { initialValue: undefined as CycleSettingsRecord | undefined },
@@ -36,7 +39,7 @@ export class CycleSettingsService {
       updatedAt: new Date().toISOString(),
     };
 
-    await db.cycleSettings.put(nextSettings);
+    await this.syncStorage.recordLocalUpsert('cycleSettings', nextSettings);
   }
 
   async hasSavedCycleSettings(): Promise<boolean> {

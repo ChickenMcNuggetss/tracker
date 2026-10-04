@@ -1,4 +1,4 @@
-import { Injectable, computed, signal } from '@angular/core';
+import { Injectable, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { liveQuery } from 'dexie';
 import { from } from 'rxjs';
@@ -9,6 +9,7 @@ import {
   type MoodKey,
   type SymptomKey,
 } from '../db/tracker-db';
+import { SyncStorageService } from '../sync/sync-storage.service';
 
 export interface LogFormValue {
   flowIntensity: FlowIntensity;
@@ -33,6 +34,8 @@ const DEFAULT_MOOD: MoodKey = 'calm';
   providedIn: 'root',
 })
 export class LogEntriesService {
+  private readonly syncStorage = inject(SyncStorageService);
+
   readonly entries = toSignal(
     from(liveQuery(() => db.logEntries.orderBy('updatedAt').reverse().toArray())),
     { initialValue: [] as CycleLogRecord[] },
@@ -58,7 +61,7 @@ export class LogEntriesService {
     const existing = this.entryForDate(dateKey);
     const timestamp = new Date().toISOString();
 
-    await db.logEntries.put({
+    await this.syncStorage.recordLocalUpsert('logEntry', {
       dateKey,
       flowIntensity: value.flowIntensity || DEFAULT_FLOW_INTENSITY,
       symptoms: [...value.symptoms],

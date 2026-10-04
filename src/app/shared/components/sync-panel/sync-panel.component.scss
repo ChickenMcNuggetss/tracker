@@ -1,0 +1,96 @@
+.sync-panel {
+  display: grid;
+  gap: 1.25rem;
+  padding: 1.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1.5rem;
+  background: linear-gradient(180deg, rgba(16, 20, 32, 0.88), rgba(10, 12, 20, 0.96));
+  color: #f3f5ff;
+}
+
+.sync-panel__header,
+.sync-panel__card,
+.sync-panel__approval {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.sync-panel__eyebrow,
+.sync-panel__label,
+.sync-panel__meta {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.72rem;
+  color: rgba(243, 245, 255, 0.72);
+}
+
+.sync-panel__copy,
+.sync-panel__value,
+.sync-panel__error,
+.sync-panel__approval p {
+  margin: 0;
+}
+
+.sync-panel__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.75rem;
+}
+
+.sync-panel__card {
+  padding: 1rem;
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.sync-panel__peer-id,
+.sync-panel__value {
+  font-size: 1rem;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.sync-panel__form {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.sync-panel__field {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.sync-panel__field input {
+  padding: 0.875rem 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 0.9rem;
+  background: rgba(255, 255, 255, 0.03);
+  color: inherit;
+}
+
+.sync-panel__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.sync-panel__button {
+  min-height: 2.75rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.sync-panel__button--primary {
+  border-color: rgba(148, 216, 255, 0.45);
+  background: linear-gradient(135deg, rgba(79, 180, 255, 0.2), rgba(43, 109, 255, 0.35));
+}
+
+.sync-panel__error {
+  color: #ffb4b4;
+}
