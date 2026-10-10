@@ -6,44 +6,6 @@
       {{ 'CycleSettingsDescription' | translate }}
     </p>
 
-    <form class="profile-form" [formGroup]="form" (ngSubmit)="save()">
-      <label class="field">
-        <span class="field-label">{{ 'CycleLength' | translate }}</span>
-        <input
-          type="number"
-          min="1"
-          step="1"
-          inputmode="numeric"
-          formControlName="cycleLength"
-          aria-describedby="cycleLength-help"
-        />
-        <span id="cycleLength-help" class="field-help">{{ 'CycleLengthHelp' | translate }}</span>
-        @if (form.controls.cycleLength.touched && form.controls.cycleLength.invalid) {
-          <span class="field-error">{{ 'PeriodLengthError' | translate }}</span>
-        }
-      </label>
-
-      <label class="field">
-        <span class="field-label">{{ 'PeriodLength' | translate }}</span>
-        <input
-          type="number"
-          min="1"
-          step="1"
-          inputmode="numeric"
-          formControlName="periodLength"
-          aria-describedby="periodLength-help"
-        />
-        <span id="periodLength-help" class="field-help">{{ 'PeriodLengthHelp' | translate }}</span>
-        @if (form.controls.periodLength.touched && form.controls.periodLength.invalid) {
-          <span class="field-error">{{ 'PeriodLengthError' | translate }}</span>
-        }
-      </label>
-
-      <button type="submit" class="save-button" [disabled]="form.invalid || isSaving()">
-        {{ 'SaveSettings' | translate }}
-      </button>
-    </form>
-
     <div>
       <h1 id="language-title">{{ 'LanguageSettings' | translate }}</h1>
       <app-select
@@ -54,6 +16,22 @@
         <app-select-option value="en" label="{{ 'English' | translate }}" />
         <app-select-option value="ru" label="{{ 'Russian' | translate }}" />
       </app-select>
+    </div>
+
+    <div class="theme-settings">
+      <h2 id="theme-title">{{ 'ThemeSettings' | translate }}</h2>
+      <button
+        type="button"
+        class="theme-toggle"
+        aria-label="{{ 'Theme' | translate }}"
+        [attr.aria-pressed]="selectedTheme() === 'dark'"
+        (click)="toggleTheme()"
+      >
+        <span class="theme-toggle__label">{{ 'Theme' | translate }}</span>
+        <span class="theme-toggle__value">
+          {{ (selectedTheme() === 'dark' ? 'Dark' : 'LightTheme') | translate }}
+        </span>
+      </button>
     </div>
   </section>
 </main>

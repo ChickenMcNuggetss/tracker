@@ -51,6 +51,49 @@
   gap: 1rem;
 }
 
+.theme-settings {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.theme-settings h2 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--color-text-primary);
+}
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-width: min(100%, 18rem);
+  min-height: 3rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--color-border-control);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-control);
+  color: var(--color-text-primary);
+  font: inherit;
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: var(--transition-interactive);
+
+  @include mixins.focus-ring;
+}
+
+.theme-toggle:hover {
+  border-color: var(--color-border-today);
+}
+
+.theme-toggle__label {
+  color: var(--color-text-secondary);
+}
+
+.theme-toggle__value {
+  color: var(--color-accent-strong);
+}
+
 .field {
   display: grid;
   gap: 0.45rem;

@@ -1,11 +1,13 @@
 .sync-panel {
   display: grid;
   gap: 1.25rem;
-  padding: 1.25rem;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 1.5rem;
-  background: linear-gradient(180deg, rgba(16, 20, 32, 0.88), rgba(10, 12, 20, 0.96));
-  color: #f3f5ff;
+  padding: 1.5rem;
+  border: 1px solid var(--color-border-card);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface-card);
+  box-shadow: var(--shadow-card);
+  backdrop-filter: blur(16px);
+  color: var(--color-text-primary);
 }
 
 .sync-panel__header,
@@ -22,7 +24,7 @@
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-size: 0.72rem;
-  color: rgba(243, 245, 255, 0.72);
+  color: var(--color-accent);
 }
 
 .sync-panel__copy,
@@ -30,6 +32,13 @@
 .sync-panel__error,
 .sync-panel__approval p {
   margin: 0;
+}
+
+.sync-panel__copy,
+.sync-panel__meta,
+.sync-panel__approval p,
+.sync-panel__error {
+  color: var(--color-text-muted);
 }
 
 .sync-panel__grid {
@@ -40,8 +49,9 @@
 
 .sync-panel__card {
   padding: 1rem;
-  border-radius: 1rem;
-  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--color-border-card);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-cell);
 }
 
 .sync-panel__peer-id,
@@ -49,6 +59,7 @@
   font-size: 1rem;
   line-height: 1.4;
   word-break: break-word;
+  color: var(--color-text-primary);
 }
 
 .sync-panel__form {
@@ -63,10 +74,10 @@
 
 .sync-panel__field input {
   padding: 0.875rem 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 0.9rem;
-  background: rgba(255, 255, 255, 0.03);
-  color: inherit;
+  border: 1px solid var(--color-border-control);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-cell);
+  color: var(--color-text-primary);
 }
 
 .sync-panel__actions {
@@ -78,19 +89,25 @@
 .sync-panel__button {
   min-height: 2.75rem;
   padding: 0.75rem 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  border: 1px solid var(--color-border-control);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.06);
-  color: inherit;
+  background: var(--color-surface-control);
+  color: var(--color-text-secondary);
   font: inherit;
   cursor: pointer;
 }
 
 .sync-panel__button--primary {
-  border-color: rgba(148, 216, 255, 0.45);
-  background: linear-gradient(135deg, rgba(79, 180, 255, 0.2), rgba(43, 109, 255, 0.35));
+  border-color: var(--color-border-today);
+  background: linear-gradient(
+    180deg,
+    var(--color-button-primary-start) 0%,
+    var(--color-button-primary-end) 100%
+  );
+  color: var(--color-button-text);
+  box-shadow: var(--shadow-button-primary);
 }
 
 .sync-panel__error {
-  color: #ffb4b4;
+  color: var(--color-period-text);
 }

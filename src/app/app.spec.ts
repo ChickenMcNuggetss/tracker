@@ -2,6 +2,8 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { computed, signal } from '@angular/core';
+import { of } from 'rxjs';
+import { TranslateLoader, provideTranslateLoader, provideTranslateService } from '@ngx-translate/core';
 import { App } from './app';
 import { routes } from './app.routes';
 import { OnboardingPage } from './pages/onboarding-page/onboarding-page';
@@ -10,6 +12,12 @@ import { LogEntriesService } from './core/services/log-entries.service';
 import { HomePage } from './pages/home/home-page';
 import { ProfilePage } from './pages/profile-page/profile-page';
 import { CalendarPage } from './pages/calendar-page/calendar-page';
+
+class TestTranslateLoader extends TranslateLoader {
+  override getTranslation() {
+    return of({});
+  }
+}
 
 function createCycleSettingsMock(hasSettings: boolean) {
   const cycleSettings = signal(
@@ -102,6 +110,11 @@ describe('App', () => {
       imports: [App, OnboardingPage, HomePage, CalendarPage, ProfilePage],
       providers: [
         provideRouter(routes),
+        provideTranslateService({
+          loader: provideTranslateLoader(() => new TestTranslateLoader()),
+          fallbackLang: 'en',
+          lang: 'en',
+        }),
         { provide: CycleSettingsService, useValue: cycleSettingsMock },
         { provide: LogEntriesService, useValue: logEntriesMock },
       ],
@@ -127,6 +140,13 @@ describe('App', () => {
     const compiled = fixture.nativeElement as HTMLElement;
 
     expect(compiled.querySelector('router-outlet')).not.toBeNull();
+  });
+
+  it('should enable the dark theme on the document body', () => {
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(document.body.classList.contains('theme-dark')).toBe(true);
   });
 
   it('should render the app navigation', () => {

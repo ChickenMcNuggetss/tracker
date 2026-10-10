@@ -12,7 +12,16 @@ import { routes } from './app.routes';
 import { provideServiceWorker } from '@angular/service-worker';
 import { provideTranslateService, TranslateService } from '@ngx-translate/core';
 import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
-import { db } from './core/db/tracker-db';
+import { db, type ThemeMode } from './core/db/tracker-db';
+
+const applyThemePreference = (theme: ThemeMode): void => {
+  const body = document.body;
+  const nextTheme = theme === 'dark' ? 'dark' : 'light';
+
+  body.dataset['theme'] = nextTheme;
+  body.classList.toggle('theme-dark', nextTheme === 'dark');
+  body.classList.toggle('theme-light', nextTheme === 'light');
+};
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -36,7 +45,10 @@ export const appConfig: ApplicationConfig = {
 
       return db.profileSettings.get('default').then((settings) => {
         const lang = settings?.language ?? 'en';
+        const theme = settings?.theme ?? 'dark';
+
         translate.use(lang);
+        applyThemePreference(theme);
       });
     }),
   ],

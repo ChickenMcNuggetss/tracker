@@ -4,26 +4,5 @@
     <h1 id="onboarding-title">{{ 'OnboardingTitle' | translate }}</h1>
     <p class="onboarding-copy">{{ 'OnboardingCopy' | translate }}</p>
 
-    <form class="onboarding-form" [formGroup]="form" (ngSubmit)="save()">
-      <label class="field">
-        <span class="field-label">{{ 'OnboardingCycleLengthQuestion' | translate }}</span>
-        <input type="number" min="1" step="1" inputmode="numeric" formControlName="cycleLength" />
-        @if (form.controls.cycleLength.touched && form.controls.cycleLength.invalid) {
-          <span class="field-error">{{ 'OnboardingCycleLengthError' | translate }}</span>
-        }
-      </label>
-
-      <label class="field">
-        <span class="field-label">{{ 'OnboardingPeriodLengthQuestion' | translate }}</span>
-        <input type="number" min="1" step="1" inputmode="numeric" formControlName="periodLength" />
-        @if (form.controls.periodLength.touched && form.controls.periodLength.invalid) {
-          <span class="field-error">{{ 'OnboardingPeriodLengthError' | translate }}</span>
-        }
-      </label>
-
-      <button type="submit" class="save-button" [disabled]="form.invalid || isSaving()">
-        {{ 'OnboardingContinue' | translate }}
-      </button>
-    </form>
   </section>
 </main>

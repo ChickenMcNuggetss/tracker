@@ -1,50 +1,114 @@
 body.theme-dark {
   color-scheme: dark;
 
-  --color-text-primary: #f7e9f0;
-  --color-text-secondary: #f1dbe4;
-  --color-text-muted: #d3b8c3;
-  --color-text-soft: #baa1ad;
-  --color-text-faint: #957d89;
-  --color-accent: #f4a8c2;
-  --color-accent-strong: #ffbfd5;
-  --color-accent-emphasis: #ffabc6;
-  --color-accent-selected: #ff8cb2;
-  --color-accent-period: #ff98b8;
-  --color-period-text: #2c0f1d;
+  --color-text-primary: #f4ecff;
+  --color-text-secondary: #e5d9ff;
+  --color-text-muted: #cab5ec;
+  --color-text-soft: #b8a9d4;
+  --color-text-faint: #9a8bb4;
+  --color-accent: #d9c3ff;
+  --color-accent-strong: #ceb0ff;
+  --color-accent-emphasis: #bd9efb;
+  --color-accent-selected: #a785f7;
+  --color-accent-period: #9b7ae7;
+  --color-period-text: #f5edff;
+  --color-ovulation-primary: #8d6fe2;
+  --color-ovulation-accent: #e3d7ff;
+  --color-ovulation-soft: rgba(141, 111, 226, 0.35);
 
-  --color-page-bg-start: #1c1119;
-  --color-page-bg-middle: #120b12;
-  --color-page-bg-end: #100a10;
-  --color-page-glow-left: rgba(171, 75, 116, 0.28);
-  --color-page-glow-right: rgba(198, 91, 138, 0.24);
-  --color-page-radial-left: rgba(171, 75, 116, 0.22);
-  --color-page-radial-right: rgba(198, 91, 138, 0.2);
+  --color-page-bg-start: #17121c;
+  --color-page-bg-middle: #120d18;
+  --color-page-bg-end: #100b14;
+  --color-page-glow-left: rgba(120, 89, 171, 0.22);
+  --color-page-glow-right: rgba(165, 121, 214, 0.18);
+  --color-page-radial-left: rgba(120, 89, 171, 0.18);
+  --color-page-radial-right: rgba(165, 121, 214, 0.16);
 
-  --color-surface-card: rgba(37, 23, 33, 0.82);
-  --color-surface-cell: #21151d;
-  --color-surface-muted: rgba(48, 31, 42, 0.72);
-  --color-surface-control: #3a2431;
-  --color-surface-tag: #462a3a;
-  --color-surface-period-start: #ffb3cb;
-  --color-surface-period-end: #ff8fb4;
-  --color-surface-period-tag: rgba(255, 255, 255, 0.18);
+  --color-surface-card: rgba(32, 24, 39, 0.86);
+  --color-surface-cell: #1d1626;
+  --color-surface-muted: rgba(46, 35, 56, 0.72);
+  --color-surface-control: #342644;
+  --color-surface-tag: #3a294f;
+  --color-surface-period-start: #5d3963;
+  --color-surface-period-end: #7a5895;
+  --color-surface-period-tag: rgba(255, 255, 255, 0.12);
 
-  --color-border-card: rgba(255, 194, 220, 0.18);
-  --color-border-cell: rgba(255, 205, 224, 0.22);
-  --color-border-control: rgba(255, 194, 220, 0.22);
-  --color-border-divider: rgba(255, 205, 224, 0.18);
-  --color-border-today: rgba(255, 168, 201, 0.88);
-  --color-ring-selected: rgba(255, 168, 201, 0.3);
+  --color-border-card: rgba(183, 161, 226, 0.18);
+  --color-border-cell: rgba(190, 170, 233, 0.2);
+  --color-border-control: rgba(190, 170, 233, 0.18);
+  --color-border-divider: rgba(190, 170, 233, 0.14);
+  --color-border-today: rgba(167, 133, 247, 0.88);
+  --color-ring-selected: rgba(167, 133, 247, 0.28);
 
-  --color-button-primary-start: #ff9fc0;
-  --color-button-primary-end: #db6e98;
-  --color-button-secondary-start: #e786a8;
-  --color-button-secondary-end: #b85781;
-  --color-button-text: #250f1a;
+  --color-button-primary-start: #6a4a8d;
+  --color-button-primary-end: #8b67b8;
+  --color-button-secondary-start: #4a345d;
+  --color-button-secondary-end: #6b4f87;
+  --color-button-text: #f4ecff;
 
-  --shadow-card: 0 22px 70px rgba(0, 0, 0, 0.38);
-  --shadow-button-primary: 0 12px 30px rgba(255, 132, 176, 0.28);
-  --shadow-button-secondary: 0 12px 30px rgba(184, 87, 129, 0.3);
-  --shadow-focus-ring: 0 0 0 3px rgba(255, 168, 201, 0.36);
+  --shadow-card: 0 22px 70px rgba(10, 8, 14, 0.42);
+  --shadow-button-primary: 0 12px 30px rgba(107, 79, 135, 0.28);
+  --shadow-button-secondary: 0 12px 30px rgba(74, 52, 93, 0.3);
+  --shadow-focus-ring: 0 0 0 3px rgba(167, 133, 247, 0.32);
+
+  .period-day {
+    border-color: #8d68b7;
+    background: linear-gradient(180deg, #31213d 0%, #684a7b 100%);
+    color: var(--color-period-text);
+  }
+
+  .ovulation {
+    color: var(--color-ovulation-accent);
+    background: radial-gradient(
+      var(--color-ovulation-primary),
+      rgba(91, 73, 123, 0.78) 50%,
+      var(--color-page-bg-middle) 100%
+    );
+    border-color: var(--color-ovulation-primary);
+  }
+
+  .btn--primary,
+  .primary-button,
+  .segmented-control__button.is-active,
+  .signal-row.is-on .signal-switch {
+    background: linear-gradient(
+      180deg,
+      var(--color-button-primary-start),
+      var(--color-button-primary-end)
+    );
+    color: var(--color-button-text);
+  }
+
+  .overlay-backdrop {
+    background: rgba(13, 9, 18, 0.72);
+    backdrop-filter: blur(14px);
+  }
+
+  .day-details-card,
+  .overlay-panel,
+  .log-section,
+  .detail-card,
+  .day-details-empty {
+    background: linear-gradient(180deg, rgba(25, 18, 32, 0.96), rgba(36, 26, 46, 0.96));
+    border-color: rgba(184, 157, 223, 0.2);
+    color: var(--color-text-primary);
+  }
+
+  .detail-card {
+    box-shadow: 0 12px 32px rgba(10, 8, 15, 0.32);
+  }
+
+  .detail-card__label,
+  .day-details-eyebrow,
+  .overlay-eyebrow,
+  .log-section__label,
+  .selection-label,
+  .month-caption {
+    color: #d9c8ff;
+  }
+
+  .detail-pill.period-day {
+    background: linear-gradient(180deg, #31213d 0%, #684a7b 100%);
+    color: var(--color-period-text);
+  }
 }

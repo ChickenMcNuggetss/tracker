@@ -40,9 +40,12 @@ export interface Prediction {
   ovulation: PredictionResult;
 }
 
+export type ThemeMode = 'light' | 'dark';
+
 export interface ProfileSettingsType {
   id: 'default';
   language: string;
+  theme: ThemeMode;
   updatedAt: string;
 }
 

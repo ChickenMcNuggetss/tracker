@@ -1,3 +1,4 @@
+import { DOCUMENT } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { AppNavigation } from './shared/components/navigation/navigation.component';
@@ -9,4 +10,13 @@ import { AppNavigation } from './shared/components/navigation/navigation.compone
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
-export class App {}
+export class App {
+  private readonly document = inject(DOCUMENT);
+
+  constructor() {
+    if (!this.document.body.dataset['theme']) {
+      this.document.body.dataset['theme'] = 'dark';
+      this.document.body.classList.add('theme-dark');
+    }
+  }
+}

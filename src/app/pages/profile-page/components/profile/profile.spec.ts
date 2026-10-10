@@ -1,8 +1,16 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
+import { of } from 'rxjs';
+import { TranslateLoader, provideTranslateLoader, provideTranslateService } from '@ngx-translate/core';
 import { CycleSettingsService } from '../../../../core/services/cycle-settings.service';
 import { ProfileComponent } from './profile';
+
+class TestTranslateLoader extends TranslateLoader {
+  override getTranslation() {
+    return of({});
+  }
+}
 
 describe('ProfilePage', () => {
   const resolvedSettings = signal({
@@ -18,6 +26,11 @@ describe('ProfilePage', () => {
     await TestBed.configureTestingModule({
       imports: [ProfileComponent],
       providers: [
+        provideTranslateService({
+          loader: provideTranslateLoader(() => new TestTranslateLoader()),
+          fallbackLang: 'en',
+          lang: 'en',
+        }),
         {
           provide: CycleSettingsService,
           useValue: {
