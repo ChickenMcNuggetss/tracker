@@ -3,7 +3,11 @@ import { provideRouter } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { computed, signal } from '@angular/core';
 import { of } from 'rxjs';
-import { TranslateLoader, provideTranslateLoader, provideTranslateService } from '@ngx-translate/core';
+import {
+  TranslateLoader,
+  provideTranslateLoader,
+  provideTranslateService,
+} from '@ngx-translate/core';
 import { App } from './app';
 import { routes } from './app.routes';
 import { OnboardingPage } from './pages/onboarding-page/onboarding-page';

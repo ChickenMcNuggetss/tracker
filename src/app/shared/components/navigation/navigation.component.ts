@@ -2,6 +2,7 @@ import { BreakpointObserver, LayoutModule } from '@angular/cdk/layout';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
+import { TranslatePipe } from '@ngx-translate/core';
 
 interface NavItem {
   readonly label: string;
@@ -12,7 +13,7 @@ interface NavItem {
 
 @Component({
   selector: 'app-navigation',
-  imports: [RouterLink, RouterLinkActive, LayoutModule, MatIconModule],
+  imports: [RouterLink, RouterLinkActive, LayoutModule, MatIconModule, TranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './navigation.component.html',
   styleUrl: './navigation.component.scss',

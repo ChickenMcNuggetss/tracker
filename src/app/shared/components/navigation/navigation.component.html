@@ -5,7 +5,7 @@
   <!-- <p class="brand-copy">Your dashboard, calendar, logs, and profile in one calm shell.</p> -->
   <!-- </div> -->
 
-  <nav class="navigation" aria-label="Primary">
+  <nav class="navigation" [attr.aria-label]="'NavPrimaryLabel' | translate">
     <ul class="navigation-list">
       @for (item of navItems; track item.path) {
         <li>
@@ -24,7 +24,7 @@
             }
             @if (!isMobile()) {
               <span class="navigation-link-label">
-                <span>{{ item.label }}</span>
+                <span>{{ item.label | translate }}</span>
               </span>
             }
           </a>

@@ -1,68 +1,67 @@
 <section class="sync-panel" aria-labelledby="sync-panel-title">
   <div class="sync-panel__header">
-    <p class="sync-panel__eyebrow">PeerJS sync</p>
-    <h2 id="sync-panel-title">Connect devices</h2>
+    <p class="sync-panel__eyebrow">{{ 'PeerJSSync' | translate }}</p>
+    <h2 id="sync-panel-title">{{ 'ConnectDevices' | translate }}</h2>
     <p class="sync-panel__copy">
-      Keep this tab open on both devices, then enter the remote Peer ID to establish a direct
-      sync session.
+      {{ 'SyncInstructions' | translate }}
     </p>
   </div>
 
   <div class="sync-panel__grid">
     <div class="sync-panel__card">
-      <span class="sync-panel__label">Your Peer ID</span>
+      <span class="sync-panel__label">{{ 'YourPeerId' | translate }}</span>
       <code class="sync-panel__peer-id">{{ peerId() }}</code>
-      <p class="sync-panel__meta">Status: {{ statusLabel() }}</p>
+      <p class="sync-panel__meta">{{ 'StatusLabel' | translate }}: {{ statusLabel() }}</p>
     </div>
 
     <div class="sync-panel__card">
-      <span class="sync-panel__label">Connected peer</span>
-      <p class="sync-panel__value">{{ connectedPeerId() ?? 'Not connected' }}</p>
-      <p class="sync-panel__meta">Pending changes: {{ pendingChanges() }}</p>
+      <span class="sync-panel__label">{{ 'ConnectedPeer' | translate }}</span>
+      <p class="sync-panel__value">{{ connectedPeerId() ?? ('NotConnected' | translate) }}</p>
+      <p class="sync-panel__meta">{{ 'PendingChangesLabel' | translate }}: {{ pendingChanges() }}</p>
     </div>
 
     <div class="sync-panel__card">
-      <span class="sync-panel__label">Last synced</span>
+      <span class="sync-panel__label">{{ 'LastSynced' | translate }}</span>
       <p class="sync-panel__value">{{ formatTimestamp(lastSyncedAt()) }}</p>
-      <p class="sync-panel__meta">Protocol version: 1</p>
+      <p class="sync-panel__meta">{{ 'ProtocolVersionLabel' | translate }}: 1</p>
     </div>
   </div>
 
   <form class="sync-panel__form" [formGroup]="form" (ngSubmit)="connect()">
     <label class="sync-panel__field">
-      <span class="sync-panel__label">Remote Peer ID</span>
+      <span class="sync-panel__label">{{ 'RemotePeerId' | translate }}</span>
       <input
         formControlName="peerId"
         type="text"
         inputmode="text"
         autocomplete="off"
         spellcheck="false"
-        placeholder="peer-id"
+        [placeholder]="'PeerIdPlaceholder' | translate"
       />
     </label>
 
     @if (form.controls.peerId.touched && form.controls.peerId.invalid) {
-      <p class="sync-panel__error">Enter a valid Peer ID using letters, numbers, dot, dash, or underscore.</p>
+      <p class="sync-panel__error">{{ 'PeerIdValidation' | translate }}</p>
     }
 
     <div class="sync-panel__actions">
-      <button type="submit" class="sync-panel__button sync-panel__button--primary">Connect</button>
-      <button type="button" class="sync-panel__button" (click)="disconnect()">Disconnect</button>
-      <button type="button" class="sync-panel__button" (click)="syncNow()">Sync now</button>
+      <button type="submit" class="sync-panel__button sync-panel__button--primary">{{ 'Connect' | translate }}</button>
+      <button type="button" class="sync-panel__button" (click)="disconnect()">{{ 'Disconnect' | translate }}</button>
+      <button type="button" class="sync-panel__button" (click)="syncNow()">{{ 'SyncNow' | translate }}</button>
     </div>
   </form>
 
   @if (pendingConnection()) {
     <div class="sync-panel__approval" role="status" aria-live="polite">
       <p>
-        Incoming connection from <strong>{{ pendingConnection()?.peerId }}</strong>
+        {{ 'IncomingConnectionFrom' | translate }} <strong>{{ pendingConnection()?.peerId }}</strong>
       </p>
       <div class="sync-panel__actions">
         <button type="button" class="sync-panel__button sync-panel__button--primary" (click)="acceptIncomingConnection()">
-          Accept
+          {{ 'Accept' | translate }}
         </button>
         <button type="button" class="sync-panel__button" (click)="rejectIncomingConnection()">
-          Reject
+          {{ 'Reject' | translate }}
         </button>
       </div>
     </div>

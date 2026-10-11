@@ -1,10 +1,17 @@
 import { DOCUMENT } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CycleSettingsService } from '../../../../core/services/cycle-settings.service';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { SelectComponent } from '../../../../shared/components/select/select.component';
-import { SelectOption } from "../../../../shared/components/select-option/select-option";
+import { SelectOption } from '../../../../shared/components/select-option/select-option';
 import { ProfileSettings } from '../../../../core/services/profile-settings';
 import type { ThemeMode } from '../../../../core/db/tracker-db';
 
@@ -25,7 +32,9 @@ export class ProfileComponent {
   private readonly profileSettingsService = inject(ProfileSettings);
 
   readonly isSaving = signal(false);
-  readonly selectedLanguage = computed(() => this.profileSettingsService.entry()?.language ?? this.translationService.currentLang());
+  readonly selectedLanguage = computed(
+    () => this.profileSettingsService.entry()?.language ?? this.translationService.currentLang(),
+  );
   readonly selectedTheme = computed(() => this.profileSettingsService.entry()?.theme ?? 'dark');
 
   readonly form = this.fb.group({

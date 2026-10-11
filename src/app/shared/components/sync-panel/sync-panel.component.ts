@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { PeerSyncService } from '../../../core/sync/peer-sync.service';
 import { SyncStateService } from '../../../core/sync/sync-state.service';
 
@@ -7,7 +8,7 @@ const PEER_ID_PATTERN = /^[a-zA-Z0-9._-]+$/;
 
 @Component({
   selector: 'app-sync-panel',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, TranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './sync-panel.component.html',
   styleUrl: './sync-panel.component.scss',
@@ -16,6 +17,7 @@ export class SyncPanelComponent {
   private readonly fb = inject(FormBuilder);
   private readonly peerSync = inject(PeerSyncService);
   private readonly syncState = inject(SyncStateService);
+  private readonly translate = inject(TranslateService);
 
   readonly pendingConnection = computed(() => this.peerSync.pendingConnection());
   readonly peerId = this.syncState.peerId;
@@ -63,29 +65,29 @@ export class SyncPanelComponent {
   statusLabel(): string {
     switch (this.status()) {
       case 'initializing':
-        return 'Initializing peer';
+        return this.translate.instant('PeerStatusInitializing');
       case 'connecting':
-        return 'Connecting';
+        return this.translate.instant('PeerStatusConnecting');
       case 'awaiting-approval':
-        return 'Waiting for approval';
+        return this.translate.instant('PeerStatusAwaitingApproval');
       case 'handshaking':
-        return 'Handshaking';
+        return this.translate.instant('PeerStatusHandshaking');
       case 'syncing':
-        return 'Syncing';
+        return this.translate.instant('PeerStatusSyncing');
       case 'connected':
-        return 'Connected';
+        return this.translate.instant('PeerStatusConnected');
       case 'disconnected':
-        return 'Disconnected';
+        return this.translate.instant('PeerStatusDisconnected');
       case 'error':
-        return 'Error';
+        return this.translate.instant('PeerStatusError');
       default:
-        return 'Ready';
+        return this.translate.instant('PeerStatusReady');
     }
   }
 
   formatTimestamp(value: string | null): string {
     if (!value) {
-      return 'Not synced yet';
+      return this.translate.instant('NotSyncedYet');
     }
 
     return new Intl.DateTimeFormat(undefined, {

@@ -10,7 +10,10 @@ export class ProfileSettings {
   private readonly syncStorage = inject(SyncStorageService);
   readonly entry = toSignal(from(liveQuery(() => db.profileSettings.get('default'))));
 
-  async saveProfileSettings(language: string, theme: ThemeMode = this.entry()?.theme ?? 'dark'): Promise<void> {
+  async saveProfileSettings(
+    language: string,
+    theme: ThemeMode = this.entry()?.theme ?? 'dark',
+  ): Promise<void> {
     const nextSettings: ProfileSettingsType = {
       id: 'default',
       language,
