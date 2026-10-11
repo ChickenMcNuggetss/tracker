@@ -17,7 +17,9 @@
     <div class="sync-panel__card">
       <span class="sync-panel__label">{{ 'ConnectedPeer' | translate }}</span>
       <p class="sync-panel__value">{{ connectedPeerId() ?? ('NotConnected' | translate) }}</p>
-      <p class="sync-panel__meta">{{ 'PendingChangesLabel' | translate }}: {{ pendingChanges() }}</p>
+      <p class="sync-panel__meta">
+        {{ 'PendingChangesLabel' | translate }}: {{ pendingChanges() }}
+      </p>
     </div>
 
     <div class="sync-panel__card">
@@ -45,19 +47,30 @@
     }
 
     <div class="sync-panel__actions">
-      <button type="submit" class="sync-panel__button sync-panel__button--primary">{{ 'Connect' | translate }}</button>
-      <button type="button" class="sync-panel__button" (click)="disconnect()">{{ 'Disconnect' | translate }}</button>
-      <button type="button" class="sync-panel__button" (click)="syncNow()">{{ 'SyncNow' | translate }}</button>
+      <button type="submit" class="sync-panel__button sync-panel__button--primary">
+        {{ 'Connect' | translate }}
+      </button>
+      <button type="button" class="sync-panel__button" (click)="disconnect()">
+        {{ 'Disconnect' | translate }}
+      </button>
+      <button type="button" class="sync-panel__button" (click)="syncNow()">
+        {{ 'SyncNow' | translate }}
+      </button>
     </div>
   </form>
 
   @if (pendingConnection()) {
     <div class="sync-panel__approval" role="status" aria-live="polite">
       <p>
-        {{ 'IncomingConnectionFrom' | translate }} <strong>{{ pendingConnection()?.peerId }}</strong>
+        {{ 'IncomingConnectionFrom' | translate }}
+        <strong>{{ pendingConnection()?.peerId }}</strong>
       </p>
       <div class="sync-panel__actions">
-        <button type="button" class="sync-panel__button sync-panel__button--primary" (click)="acceptIncomingConnection()">
+        <button
+          type="button"
+          class="sync-panel__button sync-panel__button--primary"
+          (click)="acceptIncomingConnection()"
+        >
           {{ 'Accept' | translate }}
         </button>
         <button type="button" class="sync-panel__button" (click)="rejectIncomingConnection()">
