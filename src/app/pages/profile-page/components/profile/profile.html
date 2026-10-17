@@ -1,13 +1,13 @@
 <main class="profile-page">
   <section class="profile-card" aria-labelledby="profile-title">
     <p class="profile-eyebrow">{{ 'Profile' | translate }}</p>
-    <h1 id="profile-title">{{ 'CycleSettings' | translate }}</h1>
-    <p class="profile-copy">
+    <!-- <h1 id="profile-title">{{ 'CycleSettings' | translate }}</h1> -->
+    <!-- <p class="profile-copy">
       {{ 'CycleSettingsDescription' | translate }}
-    </p>
+    </p> -->
 
     <div>
-      <h1 id="language-title">{{ 'LanguageSettings' | translate }}</h1>
+      <!-- <h1 id="language-title">{{ 'LanguageSettings' | translate }}</h1> -->
       <app-select
         label="{{ 'Language' | translate }}"
         (valueChange)="switchLanguage($event)"
