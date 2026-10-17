@@ -1,7 +1,8 @@
 import type { SyncEntityKind } from '../db/tracker-db';
 
-export const SYNC_PROTOCOL_VERSION = 1;
+export const SYNC_PROTOCOL_VERSION = 3;
 export const SYNC_MAX_MESSAGE_BYTES = 48 * 1024;
+export const CALENDAR_SYNC_KINDS: SyncEntityKind[] = ['periodDay', 'cycleSettings', 'logEntry'];
 
 export type SyncChangeOperation = 'upsert' | 'delete';
 export type SyncStatus =
@@ -11,6 +12,7 @@ export type SyncStatus =
   | 'awaiting-approval'
   | 'handshaking'
   | 'syncing'
+  | 'needs-review'
   | 'connected'
   | 'disconnected'
   | 'error';
@@ -43,6 +45,7 @@ export interface SyncEntityMap {
   profileSettings: {
     id: 'default';
     language: string;
+    theme: 'light' | 'dark';
     updatedAt: string;
   };
 }
@@ -96,6 +99,16 @@ export interface SyncHandshakeMessage {
   datasetVersion: number;
   supportedKinds: SyncEntityKind[];
   sessionToken: string | null;
+  sessionId: string;
+}
+
+export interface SyncSessionRequestMessage {
+  type: 'session-request';
+  protocolVersion: number;
+  deviceId: string;
+  peerId: string;
+  requestId: string;
+  sessionId: string;
 }
 
 export interface SyncSnapshotRequestMessage {
@@ -104,6 +117,7 @@ export interface SyncSnapshotRequestMessage {
   deviceId: string;
   peerId: string;
   knownDatasetVersion: number;
+  sessionId: string;
 }
 
 export interface SyncSnapshotMessage {
@@ -115,6 +129,7 @@ export interface SyncSnapshotMessage {
   chunkIndex: number;
   chunkCount: number;
   snapshot: SyncSnapshot;
+  sessionId: string;
 }
 
 export interface SyncChangeMessage {
@@ -123,6 +138,7 @@ export interface SyncChangeMessage {
   deviceId: string;
   peerId: string;
   change: SyncChange;
+  sessionId: string;
 }
 
 export interface SyncAckMessage {
@@ -132,6 +148,23 @@ export interface SyncAckMessage {
   peerId: string;
   changeIds: string[];
   datasetVersion: number;
+  sessionId: string;
+  ackType: 'change' | 'snapshot' | 'session';
+  snapshotId: string | null;
+}
+
+export interface SyncCompletionMessage {
+  type: 'completion';
+  protocolVersion: number;
+  deviceId: string;
+  peerId: string;
+  sessionId: string;
+  sent: number;
+  received: number;
+  acknowledged: number;
+  conflicts: number;
+  pending: number;
+  completedAt: string;
 }
 
 export interface SyncHeartbeatMessage {
@@ -140,6 +173,7 @@ export interface SyncHeartbeatMessage {
   deviceId: string;
   peerId: string;
   timestamp: string;
+  sessionId: string;
 }
 
 export interface SyncErrorMessage {
@@ -149,14 +183,17 @@ export interface SyncErrorMessage {
   peerId: string;
   code: string;
   message: string;
+  sessionId: string;
 }
 
 export type SyncMessage =
   | SyncHandshakeMessage
+  | SyncSessionRequestMessage
   | SyncSnapshotRequestMessage
   | SyncSnapshotMessage
   | SyncChangeMessage
   | SyncAckMessage
+  | SyncCompletionMessage
   | SyncHeartbeatMessage
   | SyncErrorMessage;
 
@@ -165,9 +202,33 @@ export interface SyncConflict<K extends SyncEntityKind = SyncEntityKind> {
   entityId: string;
   localChange: SyncChange<K>;
   remoteChange: SyncChange<K>;
-  resolvedChange: SyncChange<K>;
+  resolvedChange: SyncChange<K> | null;
+  resolution: 'unresolved' | 'local' | 'remote';
   reason: string;
   resolvedAt: string;
+}
+
+export function createSessionRequestMessage(params: {
+  deviceId: string;
+  peerId: string;
+  requestId: string;
+  sessionId: string;
+}): SyncSessionRequestMessage {
+  return {
+    type: 'session-request',
+    protocolVersion: SYNC_PROTOCOL_VERSION,
+    ...params,
+  };
+}
+
+export interface SyncResult {
+  sessionId: string;
+  sent: number;
+  received: number;
+  acknowledged: number;
+  conflicts: number;
+  pending: number;
+  completedAt: string;
 }
 
 export function createHandshakeMessage(params: {
@@ -176,6 +237,7 @@ export function createHandshakeMessage(params: {
   datasetVersion: number;
   supportedKinds: SyncEntityKind[];
   sessionToken?: string | null;
+  sessionId: string;
 }): SyncHandshakeMessage {
   return {
     type: 'handshake',
@@ -185,6 +247,7 @@ export function createHandshakeMessage(params: {
     datasetVersion: params.datasetVersion,
     supportedKinds: [...params.supportedKinds],
     sessionToken: params.sessionToken ?? null,
+    sessionId: params.sessionId,
   };
 }
 
@@ -192,6 +255,7 @@ export function createSnapshotRequestMessage(params: {
   deviceId: string;
   peerId: string;
   knownDatasetVersion: number;
+  sessionId: string;
 }): SyncSnapshotRequestMessage {
   return {
     type: 'snapshot-request',
@@ -199,6 +263,7 @@ export function createSnapshotRequestMessage(params: {
     deviceId: params.deviceId,
     peerId: params.peerId,
     knownDatasetVersion: params.knownDatasetVersion,
+    sessionId: params.sessionId,
   };
 }
 
@@ -209,6 +274,7 @@ export function createSnapshotMessage(params: {
   snapshotId?: string;
   chunkIndex?: number;
   chunkCount?: number;
+  sessionId: string;
 }): SyncSnapshotMessage {
   return {
     type: 'snapshot',
@@ -219,6 +285,7 @@ export function createSnapshotMessage(params: {
     chunkIndex: params.chunkIndex ?? 0,
     chunkCount: params.chunkCount ?? 1,
     snapshot: params.snapshot,
+    sessionId: params.sessionId,
   };
 }
 
@@ -226,6 +293,7 @@ export function createChangeMessage(params: {
   deviceId: string;
   peerId: string;
   change: SyncChange;
+  sessionId: string;
 }): SyncChangeMessage {
   return {
     type: 'change',
@@ -233,6 +301,7 @@ export function createChangeMessage(params: {
     deviceId: params.deviceId,
     peerId: params.peerId,
     change: params.change,
+    sessionId: params.sessionId,
   };
 }
 
@@ -241,6 +310,9 @@ export function createAckMessage(params: {
   peerId: string;
   changeIds: string[];
   datasetVersion: number;
+  sessionId: string;
+  ackType?: SyncAckMessage['ackType'];
+  snapshotId?: string | null;
 }): SyncAckMessage {
   return {
     type: 'ack',
@@ -249,6 +321,19 @@ export function createAckMessage(params: {
     peerId: params.peerId,
     changeIds: [...params.changeIds],
     datasetVersion: params.datasetVersion,
+    sessionId: params.sessionId,
+    ackType: params.ackType ?? 'change',
+    snapshotId: params.snapshotId ?? null,
+  };
+}
+
+export function createCompletionMessage(
+  params: Omit<SyncCompletionMessage, 'type' | 'protocolVersion'>,
+): SyncCompletionMessage {
+  return {
+    type: 'completion',
+    protocolVersion: SYNC_PROTOCOL_VERSION,
+    ...params,
   };
 }
 
@@ -256,6 +341,7 @@ export function createHeartbeatMessage(params: {
   deviceId: string;
   peerId: string;
   timestamp?: string;
+  sessionId: string;
 }): SyncHeartbeatMessage {
   return {
     type: 'heartbeat',
@@ -263,6 +349,7 @@ export function createHeartbeatMessage(params: {
     deviceId: params.deviceId,
     peerId: params.peerId,
     timestamp: params.timestamp ?? new Date().toISOString(),
+    sessionId: params.sessionId,
   };
 }
 
@@ -271,6 +358,7 @@ export function createErrorMessage(params: {
   peerId: string;
   code: string;
   message: string;
+  sessionId: string;
 }): SyncErrorMessage {
   return {
     type: 'error',
@@ -279,6 +367,7 @@ export function createErrorMessage(params: {
     peerId: params.peerId,
     code: params.code,
     message: params.message,
+    sessionId: params.sessionId,
   };
 }
 
@@ -296,17 +385,26 @@ export function isSyncMessage(value: unknown): value is SyncMessage {
       return (
         hasMessageIdentity(value) &&
         typeof value['datasetVersion'] === 'number' &&
+        typeof value['sessionId'] === 'string' &&
         Array.isArray(value['supportedKinds']) &&
         value['supportedKinds'].every(isSyncEntityKind)
       );
     case 'snapshot-request':
       return (
         hasMessageIdentity(value) &&
-        typeof value['knownDatasetVersion'] === 'number'
+        typeof value['knownDatasetVersion'] === 'number' &&
+        typeof value['sessionId'] === 'string'
+      );
+    case 'session-request':
+      return (
+        hasMessageIdentity(value) &&
+        typeof value['requestId'] === 'string' &&
+        typeof value['sessionId'] === 'string'
       );
     case 'snapshot':
       return (
         hasMessageIdentity(value) &&
+        typeof value['sessionId'] === 'string' &&
         typeof value['snapshotId'] === 'string' &&
         Number.isInteger(value['chunkIndex']) &&
         Number.isInteger(value['chunkCount']) &&
@@ -317,25 +415,43 @@ export function isSyncMessage(value: unknown): value is SyncMessage {
       );
     case 'change':
       return (
-        hasMessageIdentity(value) && isSyncChange(value['change'])
+        hasMessageIdentity(value) &&
+        typeof value['sessionId'] === 'string' &&
+        isSyncChange(value['change'])
       );
     case 'ack':
       return (
         hasMessageIdentity(value) &&
         Array.isArray(value['changeIds']) &&
         value['changeIds'].every((changeId) => typeof changeId === 'string') &&
-        typeof value['datasetVersion'] === 'number'
+        typeof value['datasetVersion'] === 'number' &&
+        typeof value['sessionId'] === 'string' &&
+        (value['snapshotId'] === null || typeof value['snapshotId'] === 'string') &&
+        (value['ackType'] === 'change' || value['ackType'] === 'snapshot' || value['ackType'] === 'session')
+      );
+    case 'completion':
+      return (
+        hasMessageIdentity(value) &&
+        typeof value['sessionId'] === 'string' &&
+        Number.isInteger(value['sent']) &&
+        Number.isInteger(value['received']) &&
+        Number.isInteger(value['acknowledged']) &&
+        Number.isInteger(value['conflicts']) &&
+        Number.isInteger(value['pending']) &&
+        typeof value['completedAt'] === 'string'
       );
     case 'heartbeat':
       return (
         hasMessageIdentity(value) &&
-        typeof value['timestamp'] === 'string'
+        typeof value['timestamp'] === 'string' &&
+        typeof value['sessionId'] === 'string'
       );
     case 'error':
       return (
         hasMessageIdentity(value) &&
         typeof value['code'] === 'string' &&
-        typeof value['message'] === 'string'
+        typeof value['message'] === 'string' &&
+        typeof value['sessionId'] === 'string'
       );
     default:
       return false;
@@ -376,6 +492,7 @@ export function resolveSyncConflict<K extends SyncEntityKind>(params: {
     localChange: params.localChange,
     remoteChange: params.remoteChange,
     resolvedChange,
+    resolution: resolvedChange === params.localChange ? 'local' : 'remote',
     reason: 'last-write-wins',
     resolvedAt: params.resolvedAt ?? new Date().toISOString(),
   };
@@ -560,7 +677,11 @@ function isPayloadForKind<K extends SyncEntityKind>(
         typeof value['createdAt'] === 'string'
       );
     case 'profileSettings':
-      return value['id'] === 'default' && typeof value['language'] === 'string';
+      return (
+        value['id'] === 'default' &&
+        typeof value['language'] === 'string' &&
+        (value['theme'] === 'light' || value['theme'] === 'dark')
+      );
   }
 }
 

@@ -2,7 +2,7 @@ import { PredictionResult } from 'cyclia';
 import Dexie, { type EntityTable } from 'dexie';
 
 export const TRACKER_DB_NAME = 'tracker-db';
-export const TRACKER_DB_VERSION = 3;
+export const TRACKER_DB_VERSION = 4;
 
 export interface PeriodDayRecord {
   dateKey: string;
@@ -107,7 +107,10 @@ export interface SyncConflictRecord {
   entityId: string;
   localChangeId: string;
   remoteChangeId: string;
-  resolvedChangeId: string;
+  localPayload: string;
+  remotePayload: string;
+  resolution: 'unresolved' | 'local' | 'remote';
+  resolvedChangeId: string | null;
   reason: string;
   resolvedAt: string;
 }
@@ -135,7 +138,16 @@ db.version(TRACKER_DB_VERSION).stores({
   syncEntities: 'entityKey, kind, entityId, updatedAt, datasetVersion, deletedAt',
   syncChanges: 'changeId, kind, entityId, updatedAt, status, datasetVersion',
   syncTombstones: 'tombstoneId, kind, entityId, deletedAt, updatedAt',
-  syncConflicts: 'conflictId, kind, entityId, resolvedAt',
+  syncConflicts: 'conflictId, kind, entityId, resolution, resolvedAt',
+}).upgrade(async (transaction) => {
+  await transaction.table('syncConflicts').toCollection().modify((conflict: Partial<SyncConflictRecord>) => {
+    if (!conflict.resolution) {
+      conflict.resolution = conflict.resolvedChangeId === conflict.remoteChangeId ? 'remote' : 'local';
+    }
+    conflict.localPayload ??= '';
+    conflict.remotePayload ??= '';
+    conflict.resolvedChangeId ??= null;
+  });
 });
 
 export { db };

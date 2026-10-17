@@ -1,32 +1,35 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
 import { of } from 'rxjs';
 import {
   TranslateLoader,
   provideTranslateLoader,
   provideTranslateService,
 } from '@ngx-translate/core';
-import { CycleSettingsService } from '../../../../core/services/cycle-settings.service';
+import { ProfileSettings } from '../../../../core/services/profile-settings';
 import { ProfileComponent } from './profile';
 
 class TestTranslateLoader extends TranslateLoader {
   override getTranslation() {
-    return of({});
+    return of({
+      Profile: 'Profile',
+      LanguageSettings: 'Language settings',
+      ThemeSettings: 'Theme settings',
+    });
   }
 }
 
-describe('ProfilePage', () => {
-  const resolvedSettings = signal({
-    cycleLength: 30,
-    periodLength: 6,
+describe('ProfileComponent', () => {
+  const entry = signal({
+    id: 'default' as const,
+    language: 'en',
+    theme: 'dark' as const,
+    updatedAt: '2026-10-17T00:00:00.000Z',
   });
-
-  const saveCycleSettings = vi.fn().mockResolvedValue(undefined);
+  const saveProfileSettings = vi.fn().mockResolvedValue(undefined);
 
   beforeEach(async () => {
-    saveCycleSettings.mockClear();
-
+    saveProfileSettings.mockClear();
     await TestBed.configureTestingModule({
       imports: [ProfileComponent],
       providers: [
@@ -35,52 +38,29 @@ describe('ProfilePage', () => {
           fallbackLang: 'en',
           lang: 'en',
         }),
-        {
-          provide: CycleSettingsService,
-          useValue: {
-            resolvedSettings,
-            saveCycleSettings,
-          },
-        },
+        { provide: ProfileSettings, useValue: { entry, saveProfileSettings } },
       ],
     }).compileComponents();
   });
 
-  it('renders the cycle settings form only', () => {
+  it('renders language and theme preferences without cycle settings', () => {
     const fixture = TestBed.createComponent(ProfileComponent);
     fixture.detectChanges();
+    const element = fixture.nativeElement as HTMLElement;
 
-    const compiled = fixture.nativeElement as HTMLElement;
-
-    expect(compiled.textContent).toContain('Cycle settings');
-    expect(compiled.textContent).toContain('Cycle length');
-    expect(compiled.textContent).toContain('Period length');
-    expect(compiled.textContent).toContain('Save settings');
-    expect(compiled.textContent).not.toContain('Avatar');
-    expect(compiled.textContent).not.toContain('History');
+    expect(element.querySelector('#profile-title')?.textContent).toContain('Profile');
+    expect(element.textContent).toContain('Language settings');
+    expect(element.textContent).toContain('Theme settings');
+    expect(element.textContent).not.toContain('Cycle length');
+    expect(element.textContent).not.toContain('Period length');
   });
 
-  it('loads the saved settings into the form and persists edits', async () => {
+  it('persists a theme change as a local profile preference', () => {
     const fixture = TestBed.createComponent(ProfileComponent);
     fixture.detectChanges();
 
-    const inputs = fixture.debugElement.queryAll(By.css('input'));
-    const cycleLengthInput = inputs[0].nativeElement as HTMLInputElement;
-    const periodLengthInput = inputs[1].nativeElement as HTMLInputElement;
+    fixture.componentInstance.toggleTheme();
 
-    expect(cycleLengthInput.value).toBe('30');
-    expect(periodLengthInput.value).toBe('6');
-
-    cycleLengthInput.value = '32';
-    cycleLengthInput.dispatchEvent(new Event('input'));
-    periodLengthInput.value = '7';
-    periodLengthInput.dispatchEvent(new Event('input'));
-
-    await fixture.componentInstance.save();
-
-    expect(saveCycleSettings).toHaveBeenCalledWith({
-      cycleLength: 32,
-      periodLength: 7,
-    });
+    expect(saveProfileSettings).toHaveBeenCalledWith('en', 'light');
   });
 });

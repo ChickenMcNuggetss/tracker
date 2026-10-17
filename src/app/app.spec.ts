@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { computed, signal } from '@angular/core';
-import { of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import {
   TranslateLoader,
   provideTranslateLoader,
@@ -10,12 +10,38 @@ import {
 } from '@ngx-translate/core';
 import { App } from './app';
 import { routes } from './app.routes';
-import { OnboardingPage } from './pages/onboarding-page/onboarding-page';
 import { CycleSettingsService } from './core/services/cycle-settings.service';
+import { AppUpdateService } from './core/services/app-update.service';
 import { LogEntriesService } from './core/services/log-entries.service';
 import { HomePage } from './pages/home/home-page';
 import { ProfilePage } from './pages/profile-page/profile-page';
 import { CalendarPage } from './pages/calendar-page/calendar-page';
+import { ProfileSettings } from './core/services/profile-settings';
+import { SyncStorageService } from './core/sync/sync-storage.service';
+import { PeerSyncService } from './core/sync/peer-sync.service';
+import { SyncStateService } from './core/sync/sync-state.service';
+import { CyclePrediction } from './core/services/cycle-prediction';
+
+vi.mock('./core/db/tracker-db', () => ({
+  db: {
+    periodDays: {
+      orderBy: () => ({ toArray: async () => [] }),
+      toArray: async () => [],
+    },
+    cyclePredictions: { get: async () => undefined, put: vi.fn() },
+    profileSettings: { get: async () => undefined, put: vi.fn() },
+  },
+}));
+
+vi.mock('dexie', async () => {
+  const actual = await vi.importActual<typeof import('dexie')>('dexie');
+  return {
+    ...actual,
+    liveQuery: (querier: () => Promise<unknown>) => new Observable((subscriber) => {
+      void querier().then((value) => subscriber.next(value));
+    }),
+  };
+});
 
 class TestTranslateLoader extends TranslateLoader {
   override getTranslation() {
@@ -107,11 +133,12 @@ describe('App', () => {
   async function setup(hasSettings: boolean) {
     const cycleSettingsMock = createCycleSettingsMock(hasSettings);
     const logEntriesMock = createLogEntriesMock();
+    const syncStatus = signal<'idle'>('idle');
 
     TestBed.resetTestingModule();
 
     await TestBed.configureTestingModule({
-      imports: [App, OnboardingPage, HomePage, CalendarPage, ProfilePage],
+      imports: [App, HomePage, CalendarPage, ProfilePage],
       providers: [
         provideRouter(routes),
         provideTranslateService({
@@ -121,6 +148,59 @@ describe('App', () => {
         }),
         { provide: CycleSettingsService, useValue: cycleSettingsMock },
         { provide: LogEntriesService, useValue: logEntriesMock },
+        {
+          provide: ProfileSettings,
+          useValue: {
+            entry: signal({ id: 'default', language: 'en', theme: 'dark', updatedAt: '' }),
+            saveProfileSettings: vi.fn(),
+          },
+        },
+        {
+          provide: CyclePrediction,
+          useValue: { cyclePredictions: signal(undefined) },
+        },
+        {
+          provide: SyncStorageService,
+          useValue: {
+            recordLocalUpsert: vi.fn(),
+            recordLocalDelete: vi.fn(),
+          },
+        },
+        {
+          provide: PeerSyncService,
+          useValue: {
+            pendingConnection: signal(null),
+            start: vi.fn(),
+            connectToPeer: vi.fn(),
+            disconnect: vi.fn(),
+            syncNow: vi.fn(),
+            resolveConflict: vi.fn(),
+            acceptPendingConnection: vi.fn(),
+            rejectPendingConnection: vi.fn(),
+          },
+        },
+        {
+          provide: SyncStateService,
+          useValue: {
+            peerId: signal('device-local'),
+            connectedPeerId: signal(null),
+            pendingChanges: signal(0),
+            lastSyncedAt: signal(null),
+            status: syncStatus,
+            error: signal(null),
+            syncResult: signal(null),
+            conflicts: signal([]),
+            iceState: signal(null),
+            diagnostics: signal(null),
+          },
+        },
+        {
+          provide: AppUpdateService,
+          useValue: {
+            updateAvailable: signal(false),
+            reloadToUpdate: vi.fn(),
+          },
+        },
       ],
     }).compileComponents();
 
@@ -165,13 +245,13 @@ describe('App', () => {
     expect(compiled.textContent).toContain('Profile');
   });
 
-  it('should route first-time users to onboarding', async () => {
+  it('should route first-time users directly to the dashboard', async () => {
     await setup(false);
 
     const harness = await RouterTestingHarness.create('/');
-    await harness.navigateByUrl('/', OnboardingPage);
+    await harness.navigateByUrl('/home', HomePage);
 
-    expect(harness.routeNativeElement?.querySelector('.onboarding-page')).not.toBeNull();
+    expect(harness.routeNativeElement?.querySelector('.dashboard-page')).not.toBeNull();
   });
 
   it('should render the shell and dashboard when settings already exist', async () => {
@@ -205,28 +285,16 @@ describe('App', () => {
     expect(harness.routeNativeElement?.querySelector('.profile-page')).not.toBeNull();
   });
 
-  it('should keep onboarding hidden once settings exist', async () => {
-    await setup(true);
-
-    const harness = await RouterTestingHarness.create('/');
-    await harness.navigateByUrl('/onboarding', OnboardingPage);
-
-    expect(harness.routeNativeElement?.querySelector('.dashboard-page')).not.toBeNull();
-  });
-
-  it('should open the quick log overlay from the dashboard', async () => {
+  it('should open the log editor from the dashboard day details', async () => {
     const { logEntriesMock } = await setup(true);
 
     const harness = await RouterTestingHarness.create('/');
     await harness.navigateByUrl('/home', HomePage);
 
     const route = harness.routeNativeElement as HTMLElement;
-    (route.querySelector('.quick-log-card') as HTMLButtonElement | null)?.click();
+    (route.querySelector('.day-details-edit') as HTMLButtonElement).click();
 
-    expect(logEntriesMock.openQuickLog).toHaveBeenCalledTimes(1);
-    expect(logEntriesMock.overlayState()).toEqual({
-      mode: 'quick',
-      dateKey: '2026-06-04',
-    });
+    expect(logEntriesMock.openEditLog).toHaveBeenCalledTimes(1);
+    expect(logEntriesMock.overlayState()?.mode).toBe('edit');
   });
 });

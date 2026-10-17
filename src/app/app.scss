@@ -57,6 +57,35 @@
   min-width: 0;
 }
 
+.update-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--color-border-card);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-card);
+  box-shadow: var(--shadow-card);
+}
+
+.update-banner button {
+  min-height: 2.75rem;
+  padding: 0.65rem 1rem;
+  border: 1px solid var(--color-border-today);
+  border-radius: var(--radius-pill);
+  background: linear-gradient(
+    180deg,
+    var(--color-button-primary-start),
+    var(--color-button-primary-end)
+  );
+  color: var(--color-button-text);
+  font: inherit;
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+}
+
 @include mixins.below-md {
   .app-shell {
     width: 100%;

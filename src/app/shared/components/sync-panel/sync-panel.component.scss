@@ -17,6 +17,16 @@
   gap: 0.5rem;
 }
 
+.sync-panel__conflict {
+  border-top: 1px solid var(--border-color, #d7dbe2);
+  margin-top: 1rem;
+  padding-top: 1rem;
+}
+
+.sync-panel__conflict p {
+  margin: 0.35rem 0;
+}
+
 .sync-panel__eyebrow,
 .sync-panel__label,
 .sync-panel__meta {
@@ -30,6 +40,7 @@
 .sync-panel__copy,
 .sync-panel__value,
 .sync-panel__error,
+.sync-panel__hint,
 .sync-panel__approval p {
   margin: 0;
 }
@@ -37,8 +48,22 @@
 .sync-panel__copy,
 .sync-panel__meta,
 .sync-panel__approval p,
+.sync-panel__hint,
 .sync-panel__error {
   color: var(--color-text-muted);
+}
+
+.sync-panel__hint {
+  font-size: 0.8rem;
+}
+
+.sync-panel__meta--diagnostic {
+  text-transform: none;
+}
+
+.sync-panel__diagnostics {
+  display: grid;
+  gap: 0.5rem;
 }
 
 .sync-panel__grid {

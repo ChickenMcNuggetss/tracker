@@ -13,6 +13,7 @@ import { provideServiceWorker } from '@angular/service-worker';
 import { provideTranslateService, TranslateService } from '@ngx-translate/core';
 import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
 import { db, type ThemeMode } from './core/db/tracker-db';
+import { AppUpdateService } from './core/services/app-update.service';
 
 const applyThemePreference = (theme: ThemeMode): void => {
   const body = document.body;
@@ -30,7 +31,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideServiceWorker('ngsw-worker.js', {
       enabled: !isDevMode(),
-      registrationStrategy: 'registerWhenStable:30000',
+      registrationStrategy: 'registerImmediately',
     }),
     provideTranslateService({
       loader: provideTranslateHttpLoader({
@@ -39,6 +40,9 @@ export const appConfig: ApplicationConfig = {
       }),
       fallbackLang: 'en',
       lang: 'en',
+    }),
+    provideAppInitializer(() => {
+      inject(AppUpdateService).start();
     }),
     provideAppInitializer(() => {
       const translate = inject(TranslateService);

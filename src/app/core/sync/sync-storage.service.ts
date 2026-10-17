@@ -24,8 +24,8 @@ import {
   compareSyncChanges,
   createSnapshotMessage,
   getEntityId,
-  resolveSyncConflict,
   type SyncMessage,
+  type SyncResult,
 } from './sync-protocol';
 
 const DEVICE_ID_STORAGE_KEY = 'tracker-device-id';
@@ -35,7 +35,7 @@ const DEFAULT_METADATA: SyncMetadataRecord = {
   deviceId: '',
   datasetVersion: 0,
   lastSyncedAt: null,
-  protocolVersion: 1,
+  protocolVersion: 3,
   updatedAt: new Date(0).toISOString(),
 };
 
@@ -52,6 +52,10 @@ export class SyncStorageService {
   readonly recentConflicts = toSignal(from(liveQuery(() => this.readRecentConflicts())), {
     initialValue: [] as SyncConflictRecord[],
   });
+
+  readonly unresolvedConflicts = computed(() =>
+    this.recentConflicts().filter((conflict) => conflict.resolution === 'unresolved'),
+  );
 
   readonly deviceId = computed(() => this.metadata()?.deviceId ?? this.getOrCreateDeviceId());
 
@@ -105,12 +109,13 @@ export class SyncStorageService {
 
   private async readPendingChanges(): Promise<SyncChangeRecord[]> {
     const table = this.syncChangesTable();
-    return table ? table.where('status').equals('pending').toArray() : [];
+    const changes = table ? await table.where('status').equals('pending').toArray() : [];
+    return changes.filter((change) => this.isCalendarKind(change.kind));
   }
 
   private async readRecentConflicts(): Promise<SyncConflictRecord[]> {
     const table = this.syncConflictsTable();
-    return table ? table.orderBy('resolvedAt').reverse().limit(20).toArray() : [];
+    return table ? table.where('resolution').equals('unresolved').toArray() : [];
   }
 
   getOrCreateDeviceId(): string {
@@ -139,16 +144,18 @@ export class SyncStorageService {
       createdAt: new Date().toISOString(),
       deviceId: metadata.deviceId,
       entities: entities
-        .filter((record) => !record.deletedAt)
+        .filter((record) => !record.deletedAt && this.isCalendarKind(record.kind))
         .map((record) => this.toSyncEntity(record)),
-      tombstones: tombstones.map((record) => ({
+      tombstones: tombstones
+        .filter((record) => this.isCalendarKind(record.kind))
+        .map((record) => ({
         kind: record.kind,
         entityId: record.entityId,
         deviceId: record.deviceId,
         entityVersion: record.entityVersion,
         deletedAt: record.deletedAt,
         updatedAt: record.updatedAt,
-      })),
+        })),
     };
   }
 
@@ -160,6 +167,7 @@ export class SyncStorageService {
     const message = createSnapshotMessage({
       deviceId: this.deviceId(),
       peerId: params.peerId,
+      sessionId: this.createSessionId(),
       snapshot,
     });
 
@@ -173,7 +181,8 @@ export class SyncStorageService {
       return [];
     }
 
-    const changes = await table.where('status').equals('pending').sortBy('createdAt');
+    const changes = (await table.where('status').equals('pending').sortBy('createdAt'))
+      .filter((change) => this.isCalendarKind(change.kind));
 
     return changes.map((change) => this.toSyncChange(change));
   }
@@ -182,6 +191,35 @@ export class SyncStorageService {
     const table = this.syncChangesTable();
 
     return table ? !!(await table.get(changeId)) : false;
+  }
+
+  async resolveConflict(conflictId: string, resolution: 'local' | 'remote'): Promise<SyncChange | null> {
+    const table = this.syncConflictsTable();
+
+    if (!table) {
+      return null;
+    }
+
+    const record = await table.get(conflictId);
+
+    if (!record || record.resolution !== 'unresolved') {
+      return null;
+    }
+
+    const selectedChange = JSON.parse(
+      resolution === 'local' ? record.localPayload : record.remotePayload,
+    ) as SyncChange;
+    const change = selectedChange.operation === 'delete'
+      ? await this.recordLocalDelete(record.kind, record.entityId)
+      : await this.recordLocalUpsert(record.kind, selectedChange.payload as SyncEntityMap[typeof record.kind]);
+
+    await table.update(conflictId, {
+      resolution,
+      resolvedChangeId: change.changeId,
+      resolvedAt: new Date().toISOString(),
+    });
+
+    return change;
   }
 
   async recordLocalUpsert<K extends SyncEntityKind>(
@@ -274,6 +312,10 @@ export class SyncStorageService {
   async applyRemoteChange<K extends SyncEntityKind>(
     change: SyncChange<K>,
   ): Promise<{ applied: boolean; conflict: SyncConflict<SyncEntityKind> | null }> {
+    if (!this.isCalendarKind(change.kind)) {
+      return { applied: false, conflict: null };
+    }
+
     const changesTable = this.syncChangesTable();
 
     if (!changesTable) {
@@ -300,7 +342,10 @@ export class SyncStorageService {
     const metadata = await this.ensureMetadata();
     const datasetVersion = Math.max(metadata.datasetVersion, change.datasetVersion);
 
-    if (!localEntity || this.isRemoteNewer(localChange, change)) {
+    const localPending = (await changesTable.where('entityId').equals(change.entityId).toArray())
+      .some((record) => record.kind === change.kind && record.status !== 'acked');
+
+    if (!localEntity || (!localPending && this.isRemoteNewer(localChange, change))) {
       await this.persistChange(change, {
         status: 'acked',
         attempts: 1,
@@ -328,6 +373,7 @@ export class SyncStorageService {
           datasetVersion,
           change.updatedAt,
           change.updatedAt,
+          change.deviceId,
         );
       } else if (change.payload) {
         await this.persistAppEntity(change.kind, change.payload);
@@ -340,6 +386,7 @@ export class SyncStorageService {
           datasetVersion,
           change.updatedAt,
           null,
+          change.deviceId,
         );
         await this.removeTombstone(change.kind, change.entityId);
       }
@@ -347,7 +394,7 @@ export class SyncStorageService {
       await this.persistMetadata({
         ...metadata,
         datasetVersion,
-        lastSyncedAt: new Date().toISOString(),
+        lastSyncedAt: metadata.lastSyncedAt,
         updatedAt: new Date().toISOString(),
       });
 
@@ -358,10 +405,16 @@ export class SyncStorageService {
       return { applied: false, conflict: null };
     }
 
-    const conflict = resolveSyncConflict({
-      localChange,
+    const conflict: SyncConflict<SyncEntityKind> = {
+      kind: change.kind,
+      entityId: change.entityId,
+      localChange: localChange as SyncChange<SyncEntityKind>,
       remoteChange: change,
-    }) as SyncConflict<SyncEntityKind>;
+      resolvedChange: null,
+      resolution: 'unresolved',
+      reason: 'manual-review-required',
+      resolvedAt: new Date().toISOString(),
+    };
     await this.persistConflict(conflict);
     await this.persistChange(change, {
       status: 'acked',
@@ -402,6 +455,16 @@ export class SyncStorageService {
     return { applied, conflicts };
   }
 
+  async markSyncCompleted(result: SyncResult): Promise<void> {
+    const metadata = await this.ensureMetadata();
+    await this.persistMetadata({
+      ...metadata,
+      datasetVersion: Math.max(metadata.datasetVersion, this.datasetVersion()),
+      lastSyncedAt: result.completedAt,
+      updatedAt: result.completedAt,
+    });
+  }
+
   async acknowledgeChanges(changeIds: string[], datasetVersion: number): Promise<void> {
     const now = new Date().toISOString();
     const table = this.syncChangesTable();
@@ -428,7 +491,7 @@ export class SyncStorageService {
     await this.persistMetadata({
       ...metadata,
       datasetVersion: Math.max(metadata.datasetVersion, datasetVersion),
-      lastSyncedAt: now,
+      lastSyncedAt: metadata.lastSyncedAt,
       updatedAt: now,
     });
   }
@@ -477,6 +540,15 @@ export class SyncStorageService {
     const existing = await table.get('sync');
 
     if (existing) {
+      if (existing.protocolVersion !== DEFAULT_METADATA.protocolVersion) {
+        const updated = {
+          ...existing,
+          protocolVersion: DEFAULT_METADATA.protocolVersion,
+          updatedAt: new Date().toISOString(),
+        };
+        await table.put(updated);
+        return updated;
+      }
       return existing;
     }
 
@@ -499,17 +571,15 @@ export class SyncStorageService {
       return;
     }
 
-    const [periodDays, cycleSettings, logEntries, profileSettings] = await Promise.all([
+    const [periodDays, cycleSettings, logEntries] = await Promise.all([
       db.periodDays.toArray(),
       db.cycleSettings.toArray(),
       db.logEntries.toArray(),
-      db.profileSettings.toArray(),
     ]);
     const records: Array<{ kind: SyncEntityKind; payload: SyncEntityMap[SyncEntityKind] }> = [
       ...periodDays.map((payload) => ({ kind: 'periodDay' as const, payload })),
       ...cycleSettings.map((payload) => ({ kind: 'cycleSettings' as const, payload })),
       ...logEntries.map((payload) => ({ kind: 'logEntry' as const, payload })),
-      ...profileSettings.map((payload) => ({ kind: 'profileSettings' as const, payload })),
     ];
 
     if (!records.length) {
@@ -592,12 +662,13 @@ export class SyncStorageService {
     datasetVersion: number,
     updatedAt: string,
     deletedAt: string | null,
+    deviceId = this.deviceId(),
   ): Promise<void> {
     const entity: SyncEntityRecord = {
       entityKey,
       entityId,
       kind,
-      deviceId: this.deviceId(),
+      deviceId,
       entityVersion,
       datasetVersion,
       updatedAt,
@@ -647,7 +718,10 @@ export class SyncStorageService {
       entityId: conflict.entityId,
       localChangeId: conflict.localChange.changeId,
       remoteChangeId: conflict.remoteChange.changeId,
-      resolvedChangeId: conflict.resolvedChange.changeId,
+      localPayload: JSON.stringify(conflict.localChange),
+      remotePayload: JSON.stringify(conflict.remoteChange),
+      resolution: conflict.resolution,
+      resolvedChangeId: conflict.resolvedChange?.changeId ?? null,
       reason: conflict.reason,
       resolvedAt: conflict.resolvedAt,
     });
@@ -809,5 +883,14 @@ export class SyncStorageService {
     const random = globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 
     return `${DEFAULT_DEVICE_ID_PREFIX}-${random}`;
+  }
+
+  private createSessionId(): string {
+    const random = globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    return `${this.deviceId()}:${random}`;
+  }
+
+  private isCalendarKind(kind: SyncEntityKind): boolean {
+    return kind === 'periodDay' || kind === 'cycleSettings' || kind === 'logEntry';
   }
 }

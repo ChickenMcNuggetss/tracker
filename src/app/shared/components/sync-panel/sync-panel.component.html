@@ -11,7 +11,9 @@
     <div class="sync-panel__card">
       <span class="sync-panel__label">{{ 'YourPeerId' | translate }}</span>
       <code class="sync-panel__peer-id">{{ peerId() }}</code>
-      <p class="sync-panel__meta">{{ 'StatusLabel' | translate }}: {{ statusLabel() }}</p>
+      <p class="sync-panel__meta" role="status" aria-live="polite">
+        {{ 'StatusLabel' | translate }}: {{ statusLabel() }}
+      </p>
     </div>
 
     <div class="sync-panel__card">
@@ -25,7 +27,7 @@
     <div class="sync-panel__card">
       <span class="sync-panel__label">{{ 'LastSynced' | translate }}</span>
       <p class="sync-panel__value">{{ formatTimestamp(lastSyncedAt()) }}</p>
-      <p class="sync-panel__meta">{{ 'ProtocolVersionLabel' | translate }}: 1</p>
+      <p class="sync-panel__meta">{{ 'ProtocolVersionLabel' | translate }}: {{ protocolVersion }}</p>
     </div>
   </div>
 
@@ -38,12 +40,18 @@
         inputmode="text"
         autocomplete="off"
         spellcheck="false"
+        aria-describedby="peer-id-help"
+        [attr.aria-invalid]="form.controls.peerId.touched && form.controls.peerId.invalid ? 'true' : null"
+        [attr.aria-errormessage]="form.controls.peerId.touched && form.controls.peerId.invalid ? 'peer-id-error' : null"
         [placeholder]="'PeerIdPlaceholder' | translate"
       />
+      <span id="peer-id-help" class="sync-panel__hint">{{ 'PeerIdHelp' | translate }}</span>
     </label>
 
     @if (form.controls.peerId.touched && form.controls.peerId.invalid) {
-      <p class="sync-panel__error">{{ 'PeerIdValidation' | translate }}</p>
+      <p id="peer-id-error" class="sync-panel__error" role="alert">
+        {{ 'PeerIdValidation' | translate }}
+      </p>
     }
 
     <div class="sync-panel__actions">
@@ -58,6 +66,71 @@
       </button>
     </div>
   </form>
+
+  @if (syncResult(); as result) {
+    <p class="sync-panel__meta" role="status" aria-live="polite">
+      {{ 'SyncComplete' | translate }} · {{ result.sent }} {{ 'SentChanges' | translate }} ·
+      {{ result.received }} {{ 'ReceivedChanges' | translate }} ·
+      {{ result.acknowledged }} {{ 'AcknowledgedChanges' | translate }} ·
+      {{ result.conflicts }} {{ 'Conflicts' | translate }}
+    </p>
+  }
+
+  <div class="sync-panel__diagnostics" aria-live="polite">
+    <p class="sync-panel__meta">
+      {{ 'IceStateLabel' | translate }}: {{ iceState() ?? ('IceStateUnavailable' | translate) }}
+    </p>
+    @if (error()) {
+      <p class="sync-panel__error" role="alert">
+        {{ 'FailureReasonLabel' | translate }}: {{ error() }}
+      </p>
+    }
+    @if (isDevelopment && diagnostics(); as diagnostic) {
+      <p class="sync-panel__meta sync-panel__meta--diagnostic">
+        {{ 'SyncDiagnosticLabel' | translate }}:
+        {{ diagnostic.localDeviceId }} (v{{ diagnostic.localProtocolVersion }}) →
+        {{ diagnostic.remoteDeviceId }} (v{{ diagnostic.remoteProtocolVersion ?? '?' }})
+      </p>
+    }
+  </div>
+
+  @if (conflicts().length > 0) {
+    <div
+      class="sync-panel__approval"
+      data-conflict-list
+      tabindex="-1"
+      role="region"
+      aria-labelledby="sync-conflicts-title"
+      aria-live="polite"
+    >
+      <h3 id="sync-conflicts-title">{{ 'SyncConflictsTitle' | translate }}</h3>
+      @for (conflict of conflicts(); track conflict.conflictId) {
+        <article class="sync-panel__conflict">
+          <p>
+            <strong>{{ conflict.kind }}: {{ conflict.entityId }}</strong>
+          </p>
+          <p>{{ 'LocalValue' | translate }}: {{ conflictSummary(conflict.localPayload, conflict.kind) }}</p>
+          <p>{{ 'RemoteValue' | translate }}: {{ conflictSummary(conflict.remotePayload, conflict.kind) }}</p>
+          <div class="sync-panel__actions">
+            <button
+              type="button"
+              class="sync-panel__button"
+              (click)="resolveConflict(conflict.conflictId, 'local')"
+            >
+              {{ 'KeepLocal' | translate }}
+            </button>
+            <button
+              type="button"
+              class="sync-panel__button sync-panel__button--primary"
+              (click)="resolveConflict(conflict.conflictId, 'remote')"
+            >
+              {{ 'KeepRemote' | translate }}
+            </button>
+          </div>
+        </article>
+      }
+    </div>
+  }
 
   @if (pendingConnection()) {
     <div class="sync-panel__approval" role="status" aria-live="polite">
@@ -80,7 +153,4 @@
     </div>
   }
 
-  @if (error()) {
-    <p class="sync-panel__error" role="alert">{{ error() }}</p>
-  }
 </section>

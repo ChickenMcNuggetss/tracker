@@ -1,10 +1,9 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, computed, effect, inject, isDevMode } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { PeerSyncService } from '../../../core/sync/peer-sync.service';
+import { PEER_ID_PATTERN, PeerSyncService } from '../../../core/sync/peer-sync.service';
 import { SyncStateService } from '../../../core/sync/sync-state.service';
-
-const PEER_ID_PATTERN = /^[a-zA-Z0-9._-]+$/;
+import { SYNC_PROTOCOL_VERSION } from '../../../core/sync/sync-protocol';
 
 @Component({
   selector: 'app-sync-panel',
@@ -26,6 +25,14 @@ export class SyncPanelComponent {
   readonly lastSyncedAt = this.syncState.lastSyncedAt;
   readonly status = this.syncState.status;
   readonly error = this.syncState.error;
+  readonly syncResult = this.syncState.syncResult;
+  readonly conflicts = this.syncState.conflicts;
+  readonly iceState = this.syncState.iceState;
+  readonly diagnostics = this.syncState.diagnostics;
+  readonly protocolVersion = SYNC_PROTOCOL_VERSION;
+  readonly isDevelopment = isDevMode();
+
+  private readonly host = inject(ElementRef);
 
   readonly form = this.fb.group({
     peerId: this.fb.nonNullable.control('', {
@@ -34,6 +41,11 @@ export class SyncPanelComponent {
   });
 
   constructor() {
+    effect(() => {
+      if (this.status() === 'needs-review') {
+        queueMicrotask(() => (this.host.nativeElement as HTMLElement).querySelector<HTMLElement>('[data-conflict-list]')?.focus());
+      }
+    });
     void this.peerSync.start();
   }
 
@@ -43,7 +55,7 @@ export class SyncPanelComponent {
       return;
     }
 
-    this.peerSync.connectToPeer(this.form.controls.peerId.value.trim());
+    void this.peerSync.connectToPeer(this.form.controls.peerId.value.trim());
   }
 
   disconnect(): void {
@@ -52,6 +64,10 @@ export class SyncPanelComponent {
 
   syncNow(): void {
     void this.peerSync.syncNow();
+  }
+
+  resolveConflict(conflictId: string, resolution: 'local' | 'remote'): void {
+    void this.peerSync.resolveConflict(conflictId, resolution);
   }
 
   acceptIncomingConnection(): void {
@@ -74,6 +90,8 @@ export class SyncPanelComponent {
         return this.translate.instant('PeerStatusHandshaking');
       case 'syncing':
         return this.translate.instant('PeerStatusSyncing');
+      case 'needs-review':
+        return this.translate.instant('PeerStatusNeedsReview');
       case 'connected':
         return this.translate.instant('PeerStatusConnected');
       case 'disconnected':
@@ -83,6 +101,57 @@ export class SyncPanelComponent {
       default:
         return this.translate.instant('PeerStatusReady');
     }
+  }
+
+  conflictSummary(payload: string, kind: string): string {
+    try {
+      const change: unknown = JSON.parse(payload);
+      if (!this.isRecord(change)) {
+        return this.translate.instant('ConflictValueUnavailable');
+      }
+      if (change['operation'] === 'delete') {
+        return this.translate.instant('ConflictDeleted');
+      }
+      const value = change['payload'];
+      if (!this.isRecord(value)) {
+        return this.translate.instant('ConflictValueUnavailable');
+      }
+      if (kind === 'cycleSettings') {
+        return [
+          `${this.translate.instant('CycleLength')}: ${String(value['cycleLength'] ?? '—')}`,
+          `${this.translate.instant('PeriodLength')}: ${String(value['periodLength'] ?? '—')}`,
+        ].join(' · ');
+      }
+      if (kind === 'logEntry') {
+        const symptoms = Array.isArray(value['symptoms'])
+          ? value['symptoms'].map((symptom) => this.translate.instant(this.titleCase(String(symptom)))).join(', ')
+          : '—';
+        return [
+          `${this.translate.instant('Date')}: ${String(value['dateKey'] ?? '—')}`,
+          `${this.translate.instant('FlowIntensity')}: ${this.translate.instant(this.titleCase(String(value['flowIntensity'] ?? 'none')))}`,
+          `${this.translate.instant('Mood')}: ${this.translate.instant(this.titleCase(String(value['mood'] ?? 'none')))}`,
+          `${this.translate.instant('Symptoms')}: ${symptoms || this.translate.instant('None')}`,
+          `${this.translate.instant('SexualActivity')}: ${this.booleanLabel(value['sexualActivity'])}`,
+          `${this.translate.instant('VaginalDischarge')}: ${this.booleanLabel(value['vaginalDischarge'])}`,
+          `${this.translate.instant('Notes')}: ${String(value['notes'] || '—')}`,
+        ].join(' · ');
+      }
+      return `${this.translate.instant('Date')}: ${String(value['dateKey'] ?? '—')}`;
+    } catch {
+      return this.translate.instant('ConflictValueUnavailable');
+    }
+  }
+
+  private booleanLabel(value: unknown): string {
+    return this.translate.instant(value === true ? 'Yes' : 'No');
+  }
+
+  private titleCase(value: string): string {
+    return `${value.slice(0, 1).toUpperCase()}${value.slice(1)}`;
+  }
+
+  private isRecord(value: unknown): value is Record<string, unknown> {
+    return typeof value === 'object' && value !== null;
   }
 
   formatTimestamp(value: string | null): string {

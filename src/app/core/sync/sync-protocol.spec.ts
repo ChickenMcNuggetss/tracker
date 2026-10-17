@@ -3,7 +3,9 @@ import {
   compareSyncChanges,
   createAckMessage,
   createChangeMessage,
+  createCompletionMessage,
   createHandshakeMessage,
+  createSessionRequestMessage,
   isSyncMessage,
   resolveSyncConflict,
   splitSnapshot,
@@ -73,6 +75,18 @@ describe('sync protocol', () => {
           peerId: 'device-b',
           datasetVersion: 3,
           supportedKinds: ['logEntry'],
+          sessionId: 'session-1',
+        }),
+      ),
+    ).toBe(true);
+
+    expect(
+      isSyncMessage(
+        createSessionRequestMessage({
+          deviceId: 'device-a',
+          peerId: 'device-b',
+          requestId: 'request-1',
+          sessionId: 'session-1',
         }),
       ),
     ).toBe(true);
@@ -84,6 +98,9 @@ describe('sync protocol', () => {
           peerId: 'device-b',
           changeIds: ['change-1'],
           datasetVersion: 3,
+          sessionId: 'session-1',
+          ackType: 'snapshot',
+          snapshotId: 'snapshot-1',
         }),
       ),
     ).toBe(true);
@@ -94,6 +111,23 @@ describe('sync protocol', () => {
           deviceId: 'device-a',
           peerId: 'device-b',
           change: baseChange,
+          sessionId: 'session-1',
+        }),
+      ),
+    ).toBe(true);
+
+    expect(
+      isSyncMessage(
+        createCompletionMessage({
+          deviceId: 'device-a',
+          peerId: 'device-b',
+          sessionId: 'session-1',
+          sent: 1,
+          received: 2,
+          acknowledged: 1,
+          conflicts: 0,
+          pending: 0,
+          completedAt: '2026-09-07T10:00:00.000Z',
         }),
       ),
     ).toBe(true);
@@ -105,6 +139,7 @@ describe('sync protocol', () => {
           peerId: 'device-b',
           datasetVersion: 3,
           supportedKinds: ['logEntry'],
+          sessionId: 'session-1',
         }),
         type: 'snapshot',
         snapshotId: 'snapshot-1',
