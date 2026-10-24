@@ -41,6 +41,8 @@ const DEFAULT_METADATA: SyncMetadataRecord = {
 
 @Service()
 export class SyncStorageService {
+  private localWriteQueue: Promise<void> = Promise.resolve();
+
   readonly metadata = toSignal(from(liveQuery(() => this.readMetadata())), {
     initialValue: undefined as SyncMetadataRecord | undefined,
   });
@@ -226,6 +228,13 @@ export class SyncStorageService {
     kind: K,
     payload: SyncEntityMap[K],
   ): Promise<SyncChange<K>> {
+    return this.enqueueLocalWrite(() => this.recordLocalUpsertNow(kind, payload));
+  }
+
+  private async recordLocalUpsertNow<K extends SyncEntityKind>(
+    kind: K,
+    payload: SyncEntityMap[K],
+  ): Promise<SyncChange<K>> {
     const entityId = getEntityId(kind, payload);
     const entityKey = this.entityKey(kind, entityId);
     const now = new Date().toISOString();
@@ -263,6 +272,13 @@ export class SyncStorageService {
   }
 
   async recordLocalDelete<K extends SyncEntityKind>(
+    kind: K,
+    entityId: string,
+  ): Promise<SyncChange<K>> {
+    return this.enqueueLocalWrite(() => this.recordLocalDeleteNow(kind, entityId));
+  }
+
+  private async recordLocalDeleteNow<K extends SyncEntityKind>(
     kind: K,
     entityId: string,
   ): Promise<SyncChange<K>> {
@@ -892,5 +908,14 @@ export class SyncStorageService {
 
   private isCalendarKind(kind: SyncEntityKind): boolean {
     return kind === 'periodDay' || kind === 'cycleSettings' || kind === 'logEntry';
+  }
+
+  private enqueueLocalWrite<T>(operation: () => Promise<T>): Promise<T> {
+    const result = this.localWriteQueue.then(operation, operation);
+    this.localWriteQueue = result.then(
+      () => undefined,
+      () => undefined,
+    );
+    return result;
   }
 }

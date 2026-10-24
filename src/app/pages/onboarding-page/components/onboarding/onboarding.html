@@ -1,0 +1,57 @@
+<main class="onboarding-page">
+  <section class="onboarding-card" aria-labelledby="onboarding-title">
+    <p class="onboarding-eyebrow">{{ 'OnboardingWelcome' | translate }}</p>
+    <h1 id="onboarding-title">{{ 'OnboardingTitle' | translate }}</h1>
+    <p class="onboarding-copy">{{ 'OnboardingDescription' | translate }}</p>
+
+    <form class="onboarding-form" [formGroup]="form" (ngSubmit)="save()">
+      <label class="field">
+        <span class="field-label">{{ 'OnboardingCycleLengthQuestion' | translate }}</span>
+        <input
+          type="number"
+          min="1"
+          step="1"
+          inputmode="numeric"
+          formControlName="cycleLength"
+          [attr.aria-describedby]="
+            form.controls.cycleLength.touched && form.controls.cycleLength.invalid
+              ? 'onboarding-cycle-error'
+              : null
+          "
+          [attr.aria-invalid]="form.controls.cycleLength.touched && form.controls.cycleLength.invalid"
+        />
+        @if (form.controls.cycleLength.touched && form.controls.cycleLength.invalid) {
+          <span id="onboarding-cycle-error" class="field-error">
+            {{ 'OnboardingFormError' | translate }}
+          </span>
+        }
+      </label>
+
+      <label class="field">
+        <span class="field-label">{{ 'OnboardingPeriodLengthQuestion' | translate }}</span>
+        <input
+          type="number"
+          min="1"
+          step="1"
+          inputmode="numeric"
+          formControlName="periodLength"
+          [attr.aria-describedby]="
+            form.controls.periodLength.touched && form.controls.periodLength.invalid
+              ? 'onboarding-period-error'
+              : null
+          "
+          [attr.aria-invalid]="form.controls.periodLength.touched && form.controls.periodLength.invalid"
+        />
+        @if (form.controls.periodLength.touched && form.controls.periodLength.invalid) {
+          <span id="onboarding-period-error" class="field-error">
+            {{ 'OnboardingFormError' | translate }}
+          </span>
+        }
+      </label>
+
+      <button type="submit" class="save-button" [disabled]="form.invalid || isSaving()">
+        {{ 'OnboardingContinue' | translate }}
+      </button>
+    </form>
+  </section>
+</main>

@@ -21,6 +21,7 @@ import { SyncStorageService } from './core/sync/sync-storage.service';
 import { PeerSyncService } from './core/sync/peer-sync.service';
 import { SyncStateService } from './core/sync/sync-state.service';
 import { CyclePrediction } from './core/services/cycle-prediction';
+import { OnboardingPage } from './pages/onboarding-page/onboarding-page';
 
 vi.mock('./core/db/tracker-db', () => ({
   db: {
@@ -138,7 +139,7 @@ describe('App', () => {
     TestBed.resetTestingModule();
 
     await TestBed.configureTestingModule({
-      imports: [App, HomePage, CalendarPage, ProfilePage],
+      imports: [App, HomePage, CalendarPage, ProfilePage, OnboardingPage],
       providers: [
         provideRouter(routes),
         provideTranslateService({
@@ -245,13 +246,13 @@ describe('App', () => {
     expect(compiled.textContent).toContain('Profile');
   });
 
-  it('should route first-time users directly to the dashboard', async () => {
+  it('should route first-time users to onboarding', async () => {
     await setup(false);
 
     const harness = await RouterTestingHarness.create('/');
-    await harness.navigateByUrl('/home', HomePage);
+    await harness.navigateByUrl('/home', OnboardingPage);
 
-    expect(harness.routeNativeElement?.querySelector('.dashboard-page')).not.toBeNull();
+    expect(harness.routeNativeElement?.querySelector('.onboarding-page')).not.toBeNull();
   });
 
   it('should render the shell and dashboard when settings already exist', async () => {

@@ -3,13 +3,12 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
-  effect,
   inject,
   signal,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { liveQuery } from 'dexie';
-import { from, tap } from 'rxjs';
+import { from } from 'rxjs';
 import { PeriodDayRecord, db } from '../../../../core/db/tracker-db';
 import { LogEntriesService } from '../../../../core/services/log-entries.service';
 import { Button } from '../../../../shared/components/button/button.component';
@@ -19,6 +18,9 @@ import { CyclePrediction } from '../../../../core/services/cycle-prediction';
 import { isDateInRange } from '../../../../shared/utils/isDateInRange';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { SyncStorageService } from '../../../../core/sync/sync-storage.service';
+import { derivePeriodStarts } from '../../utils/derive-period-starts';
+import { CycleSettingsService } from '../../../../core/services/cycle-settings.service';
+import { predictedPeriodRange } from '../../../../shared/utils/predicted-period-range';
 
 interface CalendarDay {
   date: Date;
@@ -40,6 +42,7 @@ interface CalendarDay {
 export class Calendar {
   private readonly logEntriesService = inject(LogEntriesService);
   private readonly cyclePredictionService = inject(CyclePrediction);
+  private readonly cycleSettingsService = inject(CycleSettingsService);
   private readonly translate = inject(TranslateService);
   private readonly syncStorage = inject(SyncStorageService);
 
@@ -47,11 +50,9 @@ export class Calendar {
 
   displayedMonth = signal(this.startOfMonth(new Date()));
   selectedDateKey = signal<string | null>(null);
-  periodDates: string[] = [];
+  readonly isSavingPeriodDay = signal(false);
 
-  initialDays: PeriodDayRecord[] = [];
-
-  periodDays = toSignal(from(liveQuery(() => db.periodDays.toArray())), {
+  periodDays = toSignal(from(liveQuery(() => db.periodDays.orderBy('dateKey').toArray())), {
     initialValue: [] as PeriodDayRecord[],
   });
 
@@ -64,7 +65,14 @@ export class Calendar {
 
   cyclePrediction = computed(() => this.cyclePredictionService.cyclePredictions());
 
-  async addNewList(day: CalendarDay) {
+  readonly nextPeriodRange = computed(() =>
+    predictedPeriodRange(
+      this.cyclePrediction()?.nextPeriod,
+      this.cycleSettingsService.resolvedSettings().periodLength,
+    ),
+  );
+
+  private async addPeriodDay(day: CalendarDay): Promise<void> {
     await this.syncStorage.recordLocalUpsert('periodDay', {
       dateKey: day.dateKey,
       year: day.date.getFullYear(),
@@ -74,7 +82,7 @@ export class Calendar {
     });
   }
 
-  async deletePeriodDay(dateKey: string) {
+  private async deletePeriodDay(dateKey: string): Promise<void> {
     await this.syncStorage.recordLocalDelete('periodDay', dateKey);
   }
 
@@ -154,55 +162,40 @@ export class Calendar {
     this.logEntriesService.openEditLog(dateKey);
   }
 
-  toggleSelectedPeriodDay(): void {
-    if (!this.selectedDateKey()) {
+  async toggleSelectedPeriodDay(): Promise<void> {
+    const dateKey = this.selectedDateKey();
+    if (!dateKey || this.isSavingPeriodDay()) {
       return;
     }
 
-    if (this.isPeriodDay(this.selectedDateKey() ?? '')) {
-      from(this.deletePeriodDay(this.selectedDateKey() ?? '')).subscribe();
-      this.periodDates = this.periodDates.filter((dateKey) => dateKey !== this.selectedDateKey());
-    } else {
-      const selectedDate = this.calendarDays()?.find(
-        (day) => day.dateKey === this.selectedDateKey(),
-      );
-      if (selectedDate) {
-        from(this.addNewList(selectedDate!))
-          .pipe(
-            tap(() => {
-              this.calculatePredictions();
-            }),
-          )
-          .subscribe();
+    const selectedDate = this.calendarDays().find((day) => day.dateKey === dateKey);
+    if (!selectedDate) {
+      return;
+    }
+
+    this.isSavingPeriodDay.set(true);
+    try {
+      const existing = await db.periodDays.get(dateKey);
+      if (existing) {
+        await this.deletePeriodDay(dateKey);
+      } else {
+        await this.addPeriodDay(selectedDate);
       }
-      if (this.selectedDateKey()) {
-        this.periodDates = [...this.periodDates, this.selectedDateKey()!];
-      }
+      await this.calculatePredictions();
+    } finally {
+      this.isSavingPeriodDay.set(false);
     }
   }
 
-  private calculatePredictions(): void {
-    const periodDays = this.periodDays()
-      .filter((date, index, arr) => {
-        if (index === 0) return true;
-
-        const prev = arr[index - 1];
-
-        return date.year !== prev.year || date.month !== prev.month;
-      })
-      .map((record) => {
-        return {
-          date: record.dateKey,
-        };
-      });
-    this.cyclePredictionService.calculatePredictions({ periodStarts: periodDays });
+  private async calculatePredictions(): Promise<void> {
+    const periodDays = await db.periodDays.orderBy('dateKey').toArray();
+    await this.cyclePredictionService.calculatePredictions({
+      periodStarts: derivePeriodStarts(periodDays),
+    });
   }
 
-  private isPeriodDay(dateKey: string) {
-    return (
-      this.periodDates.includes(dateKey) ||
-      !!this.periodDays()?.find((record) => record.dateKey === dateKey)
-    );
+  private isPeriodDay(dateKey: string): boolean {
+    return this.periodDays().some((record) => record.dateKey === dateKey);
   }
 
   private startOfMonth(date: Date): Date {

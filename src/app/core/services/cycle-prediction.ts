@@ -23,8 +23,9 @@ export class CyclePrediction {
 
   loading$ = this.loadingSubject.asObservable();
 
-  calculatePredictions(history: HistoryInput) {
+  async calculatePredictions(history: HistoryInput): Promise<void> {
     if (history.periodStarts.length < 2) {
+      await db.cyclePredictions.delete('default');
       return;
     }
 
@@ -44,7 +45,7 @@ export class CyclePrediction {
         id: 'default',
         updatedAt: new Date().toISOString(),
       };
-      db.cyclePredictions.put(newPeriodPrediction);
+      await db.cyclePredictions.put(newPeriodPrediction);
     } catch (error) {
       console.error('Error while calculating predictions:', error);
     } finally {

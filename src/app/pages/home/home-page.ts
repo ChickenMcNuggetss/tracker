@@ -15,6 +15,7 @@ import { fromDateKey } from '../../shared/utils/fromDateKey';
 import { isDateInRange } from '../../shared/utils/isDateInRange';
 import { CyclePrediction } from '../../core/services/cycle-prediction';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { predictedPeriodRange } from '../../shared/utils/predicted-period-range';
 
 @Component({
   selector: 'app-home-page',
@@ -61,7 +62,10 @@ export class HomePage {
 
     const isPeriodDay = isDateInRange(
       dateKey,
-      this.cyclePredictionService.cyclePredictions()?.nextPeriod?.window ?? null,
+      predictedPeriodRange(
+        this.cyclePredictionService.cyclePredictions()?.nextPeriod,
+        this.cycleSettingsService.resolvedSettings().periodLength,
+      ),
     );
     const isOvulationDay = isDateInRange(
       dateKey,

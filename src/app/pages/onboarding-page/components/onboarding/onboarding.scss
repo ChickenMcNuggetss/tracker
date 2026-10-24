@@ -1,0 +1,135 @@
+@use '../../../../../theme/mixins';
+
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.onboarding-page {
+  display: grid;
+  place-items: center;
+  min-height: calc(100svh - 3rem);
+  padding: 1.25rem;
+}
+
+.onboarding-card {
+  display: grid;
+  gap: 1rem;
+  width: min(100%, 34rem);
+  padding: 1.5rem;
+  border: 1px solid var(--color-border-card);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface-card);
+  box-shadow: var(--shadow-card);
+  backdrop-filter: blur(16px);
+}
+
+.onboarding-eyebrow {
+  margin: 0;
+  color: var(--color-accent);
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.onboarding-card h1,
+.onboarding-copy {
+  margin: 0;
+}
+
+.onboarding-card h1 {
+  font-size: var(--font-size-title-sm);
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+}
+
+.onboarding-copy {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-body);
+  line-height: 1.65;
+}
+
+.onboarding-form,
+.field {
+  display: grid;
+}
+
+.onboarding-form {
+  gap: 1rem;
+}
+
+.field {
+  gap: 0.45rem;
+}
+
+.field-label {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-semibold);
+}
+
+.field-error {
+  color: var(--color-period-text);
+  font-size: var(--font-size-weekday);
+  font-weight: var(--font-weight-semibold);
+}
+
+input {
+  width: 100%;
+  min-height: 3rem;
+  padding: 0.8rem 0.95rem;
+  border: 1px solid var(--color-border-control);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-cell);
+  color: var(--color-text-primary);
+  font: inherit;
+  transition: var(--transition-interactive);
+
+  @include mixins.focus-ring;
+}
+
+input:hover {
+  border-color: var(--color-border-today);
+}
+
+input:focus {
+  outline: none;
+}
+
+.save-button {
+  justify-self: start;
+  min-height: 3rem;
+  padding: 0.8rem 1.2rem;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(
+    180deg,
+    var(--color-button-primary-start) 0%,
+    var(--color-button-primary-end) 100%
+  );
+  color: var(--color-button-text);
+  font-size: var(--font-size-button);
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+  box-shadow: var(--shadow-button-primary);
+  transition: var(--transition-interactive);
+
+  @include mixins.focus-ring;
+}
+
+.save-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.save-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+@include mixins.below-md {
+  .onboarding-card {
+    padding: 1.25rem;
+  }
+}

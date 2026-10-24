@@ -138,4 +138,36 @@ describe('SyncStorageService', () => {
       resolvedChangeId: selected.changeId,
     }));
   });
+
+  it('serializes simultaneous local writes before assigning their versions', async () => {
+    const service = TestBed.inject(SyncStorageService);
+    let releaseFirstWrite!: () => void;
+    const firstWriteGate = new Promise<void>((resolve) => {
+      releaseFirstWrite = resolve;
+    });
+    const internals = service as unknown as {
+      recordLocalUpsertNow: typeof service.recordLocalUpsert;
+    };
+    const secondChange = { ...baseChange, changeId: 'second-change', entityId: '2026-10-18' };
+    const write = vi.spyOn(internals, 'recordLocalUpsertNow')
+      .mockImplementationOnce(async () => {
+        await firstWriteGate;
+        return baseChange;
+      })
+      .mockResolvedValueOnce(secondChange);
+
+    const first = service.recordLocalUpsert('logEntry', baseChange.payload!);
+    const second = service.recordLocalUpsert('logEntry', {
+      ...baseChange.payload!,
+      dateKey: '2026-10-18',
+    });
+    await Promise.resolve();
+
+    expect(write).toHaveBeenCalledTimes(1);
+    releaseFirstWrite();
+    await first;
+    await second;
+
+    expect(write).toHaveBeenCalledTimes(2);
+  });
 });

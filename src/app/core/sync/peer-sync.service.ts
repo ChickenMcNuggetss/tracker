@@ -64,7 +64,6 @@ export class PeerSyncService {
   }
 
   private async initializePeer(): Promise<void> {
-
     await this.storage.ensureInitialized();
 
     this.manualDisconnect = false;
@@ -183,7 +182,9 @@ export class PeerSyncService {
     const normalizedPeerId = peerId.trim();
     if (!PEER_ID_PATTERN.test(normalizedPeerId)) {
       this.clearConnectionTimer();
-      this.connectionService.reportFailure('Enter a valid peer ID using letters, numbers, dots, dashes, or underscores.');
+      this.connectionService.reportFailure(
+        'Enter a valid peer ID using letters, numbers, dots, dashes, or underscores.',
+      );
       this.error.set('Enter a valid peer ID using letters, numbers, dots, dashes, or underscores.');
       this.status.set('error');
       return;
@@ -221,7 +222,8 @@ export class PeerSyncService {
         return;
       }
       connection.close();
-      const message = 'WebRTC connection timed out after 15 seconds. Check the peer ID, network, or TURN configuration.';
+      const message =
+        'WebRTC connection timed out after 15 seconds. Check the peer ID, network, or TURN configuration.';
       this.connectionService.reportFailure(message);
       this.error.set(message);
       this.status.set('error');
@@ -283,7 +285,10 @@ export class PeerSyncService {
 
   async resolveConflict(conflictId: string, resolution: 'local' | 'remote'): Promise<void> {
     const resolved = await this.storage.resolveConflict(conflictId, resolution);
-    if (resolved && this.storage.unresolvedConflicts().every((conflict) => conflict.conflictId === conflictId)) {
+    if (
+      resolved &&
+      this.storage.unresolvedConflicts().every((conflict) => conflict.conflictId === conflictId)
+    ) {
       this.connectionService.completeConflictReview();
     }
   }
@@ -380,8 +385,12 @@ export class PeerSyncService {
   }
 
   private peerErrorType(value: unknown): string | null {
-    if (typeof value !== 'object' || value === null || !('type' in value) ||
-      typeof value.type !== 'string') {
+    if (
+      typeof value !== 'object' ||
+      value === null ||
+      !('type' in value) ||
+      typeof value.type !== 'string'
+    ) {
       return null;
     }
     return value.type;

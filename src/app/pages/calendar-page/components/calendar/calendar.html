@@ -46,9 +46,7 @@
             [class.today]="day.isToday"
             [attr.aria-pressed]="day.isSelected"
             [attr.aria-label]="day.date | date: 'fullDate'"
-            [class.next-period]="
-              isDateInRange(day.dateKey, cyclePrediction()?.nextPeriod?.window ?? null)
-            "
+            [class.next-period]="isDateInRange(day.dateKey, nextPeriodRange())"
             [class.ovulation]="
               isDateInRange(day.dateKey, cyclePrediction()?.ovulation?.window ?? null)
             "
@@ -68,14 +66,17 @@
       <p class="empty-state">{{ 'CalendarLoading' | translate }}</p>
     }
 
-    <div class="selection-panel">
+    <div class="selection-panel" [attr.aria-busy]="isSavingPeriodDay()">
       <div class="selection-copy">
         <p class="selection-label">{{ 'CalendarSelectedDate' | translate }}</p>
         <p class="selection-value">{{ selectedDateLabel }}</p>
       </div>
 
-      <app-button [disabled]="!selectedDateKey()" (click)="toggleSelectedPeriodDay()">
-        {{ toggleLabel | translate}}
+      <app-button
+        [disabled]="!selectedDateKey() || isSavingPeriodDay()"
+        (click)="toggleSelectedPeriodDay()"
+      >
+        {{ (isSavingPeriodDay() ? 'CalendarSaving' : toggleLabel) | translate }}
       </app-button>
     </div>
   </section>
@@ -85,7 +86,7 @@
       <app-day-details
         [dateKey]="selectedDateKey() ?? ''"
         [entry]="selectedLogEntry()"
-        [isPeriod]="isDateInRange(selectedDateKey() ?? '', cyclePrediction()?.nextPeriod?.window ?? null)"
+        [isPeriod]="isDateInRange(selectedDateKey() ?? '', nextPeriodRange())"
         [isOvulation]="
           isDateInRange(selectedDateKey() ?? '', cyclePrediction()?.ovulation?.window ?? null)
         "

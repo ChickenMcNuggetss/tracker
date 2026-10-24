@@ -2,6 +2,65 @@
   <section class="profile-card" aria-labelledby="profile-title">
     <h1 id="profile-title" class="profile-eyebrow">{{ 'Profile' | translate }}</h1>
 
+    <section aria-labelledby="cycle-settings-title">
+      <h2 id="cycle-settings-title">{{ 'CycleSettings' | translate }}</h2>
+      <p class="profile-copy">{{ 'CycleSettingsDescription' | translate }}</p>
+
+      <form class="profile-form" [formGroup]="form" (ngSubmit)="save()">
+        <label class="field">
+          <span class="field-label">{{ 'CycleLength' | translate }}</span>
+          <input
+            type="number"
+            min="1"
+            step="1"
+            inputmode="numeric"
+            formControlName="cycleLength"
+            [attr.aria-describedby]="
+              form.controls.cycleLength.touched && form.controls.cycleLength.invalid
+                ? 'cycle-length-help cycle-length-error'
+                : 'cycle-length-help'
+            "
+            [attr.aria-invalid]="form.controls.cycleLength.touched && form.controls.cycleLength.invalid"
+          />
+          <span id="cycle-length-help" class="field-help">{{ 'CycleLengthHelp' | translate }}</span>
+          @if (form.controls.cycleLength.touched && form.controls.cycleLength.invalid) {
+            <span id="cycle-length-error" class="field-error">
+              {{ 'PeriodLengthError' | translate }}
+            </span>
+          }
+        </label>
+
+        <label class="field">
+          <span class="field-label">{{ 'PeriodLength' | translate }}</span>
+          <input
+            type="number"
+            min="1"
+            step="1"
+            inputmode="numeric"
+            formControlName="periodLength"
+            [attr.aria-describedby]="
+              form.controls.periodLength.touched && form.controls.periodLength.invalid
+                ? 'period-length-help period-length-error'
+                : 'period-length-help'
+            "
+            [attr.aria-invalid]="form.controls.periodLength.touched && form.controls.periodLength.invalid"
+          />
+          <span id="period-length-help" class="field-help">
+            {{ 'PeriodLengthHelp' | translate }}
+          </span>
+          @if (form.controls.periodLength.touched && form.controls.periodLength.invalid) {
+            <span id="period-length-error" class="field-error">
+              {{ 'PeriodLengthError' | translate }}
+            </span>
+          }
+        </label>
+
+        <button type="submit" class="save-button" [disabled]="form.invalid || isSaving()">
+          {{ 'SaveSettings' | translate }}
+        </button>
+      </form>
+    </section>
+
     <div aria-labelledby="language-title">
       <h2 id="language-title">{{ 'LanguageSettings' | translate }}</h2>
       <app-select
